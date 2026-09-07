@@ -5,10 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rudraksha Packers and Movers | India's Relocation Portal</title>
 
-  <!-- Favicon -->
+  <!-- Favicon & PWA App Icons -->
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
   <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ea580c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Rudraksha Movers">
+  <meta name="mobile-web-app-capable" content="yes">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,9 +27,10 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-  <!-- Master Stylesheet -->
+  <!-- Master Stylesheet & PWA Styles -->
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="parcel.css">
+  <link rel="stylesheet" href="pwa-install.css">
 
   <!-- Leaflet CSS & JS (Free OpenStreetMap & Route Engine) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -68,6 +75,9 @@
 
         <!-- Right Action Items -->
         <div class="d-flex align-items-center gap-2">
+          <button type="button" id="btnInstallAppNav" class="pwa-nav-install-btn pwa-install-trigger" title="Install App on Phone / PC">
+            <i class="fa-solid fa-mobile-screen-button"></i> <span>Install App</span>
+          </button>
           <a href="parcel.html" target="_blank" class="btn btn-sm btn-outline-warning fw-bold rounded-pill px-3 shadow-sm d-inline-flex align-items-center gap-1" title="Send a Parcel (Opens in new tab)">
             <i class="fa-solid fa-box-open"></i> <span>Send Parcel</span>
           </a>
@@ -1724,6 +1734,9 @@
 
   <!-- Customer Relocation App JS -->
   <script src="app.js"></script>
+
+  <!-- PWA Universal Install Script -->
+  <script src="pwa-install.js"></script>
 
   <!-- Helper Script for Image Service Cards -->
   <script>

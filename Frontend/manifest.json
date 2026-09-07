@@ -1,0 +1,49 @@
+{
+  "name": "Rudraksha Packers & Movers",
+  "short_name": "Rudraksha Movers",
+  "description": "Fast, Reliable & Safe Packing and Moving Services Across India",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#ea580c",
+  "categories": ["business", "travel", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Book a Move",
+      "short_name": "Book Move",
+      "description": "Book your shifting and packing now",
+      "url": "./index.html#booking-form",
+      "icons": [{ "src": "favicon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Send Parcel",
+      "short_name": "Courier/Parcel",
+      "description": "Send package across India",
+      "url": "./parcel.html",
+      "icons": [{ "src": "favicon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Track Shipment",
+      "short_name": "Track Live",
+      "description": "Track your moving truck or courier in real time",
+      "url": "./track.html",
+      "icons": [{ "src": "favicon.png", "sizes": "192x192" }]
+    }
+  ]
+}

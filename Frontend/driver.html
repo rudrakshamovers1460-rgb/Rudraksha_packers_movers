@@ -6,8 +6,16 @@
   <title>Driver Partner Portal | Rudraksha Logistics</title>
   <meta name="description" content="Rudraksha Rider Partner App – Accept parcel delivery jobs, verify OTPs, track earnings in real time.">
 
-  <!-- Favicon -->
+  <!-- Favicon & PWA Icons -->
   <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f97316">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Rudraksha Driver">
+  <meta name="mobile-web-app-capable" content="yes">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,6 +24,7 @@
 
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="pwa-install.css">
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -784,5 +793,8 @@
 
   <!-- Driver Logic JS -->
   <script src="driver.js"></script>
+
+  <!-- PWA Universal Install Script -->
+  <script src="pwa-install.js"></script>
 </body>
 </html>
