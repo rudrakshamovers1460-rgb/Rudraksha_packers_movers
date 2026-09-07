@@ -45,7 +45,7 @@
 
   <!-- Ultra-Stylish Modern Glassmorphism Navbar -->
   <nav class="navbar navbar-expand-lg main-navbar sticky-top">
-    <div class="container">
+    <div class="container navbar-container">
       
       <!-- Brand Logo (Far Left) -->
       <a class="brand-logo-container" href="index.html">
@@ -58,37 +58,47 @@
         </div>
       </a>
 
-      <!-- Mobile Hamburger Toggle -->
-      <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+      <!-- Mobile Controls: Quick App Install Badge + Custom Animated Hamburger Button -->
+      <div class="d-flex align-items-center gap-2 d-lg-none">
+        <button type="button" class="btn-mobile-nav-app pwa-install-trigger" title="Install App on Mobile">
+          <i class="fa-solid fa-mobile-screen-button"></i> <span>App</span>
+        </button>
+        <button class="navbar-toggler custom-hamburger-btn border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation" id="mainHamburgerBtn">
+          <span class="hamburger-line top-line"></span>
+          <span class="hamburger-line mid-line"></span>
+          <span class="hamburger-line bot-line"></span>
+        </button>
+      </div>
 
       <!-- Streamlined Nav Items & Right Actions -->
       <div class="collapse navbar-collapse" id="navbarContent">
-        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link nav-link-custom active" href="#hero">Home</a></li>
-          <li class="nav-item"><a class="nav-link nav-link-custom" href="#popular-services">Services</a></li>
-          <li class="nav-item"><a class="nav-link nav-link-custom" href="#how-it-works">How It Works</a></li>
-          <li class="nav-item"><a class="nav-link nav-link-custom" href="#rate-charts">Rates</a></li>
-          <li class="nav-item"><a class="nav-link nav-link-custom" href="#who-we-are">About Us</a></li>
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 nav-menu-list">
+          <li class="nav-item"><a class="nav-link nav-link-custom active" href="#hero"><i class="fa-solid fa-house nav-link-icon d-lg-none me-2 text-warning"></i>Home</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-custom" href="#popular-services"><i class="fa-solid fa-truck-ramp-box nav-link-icon d-lg-none me-2 text-warning"></i>Services</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-custom" href="#how-it-works"><i class="fa-solid fa-route nav-link-icon d-lg-none me-2 text-warning"></i>How It Works</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-custom" href="#rate-charts"><i class="fa-solid fa-tag nav-link-icon d-lg-none me-2 text-warning"></i>Rates</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-custom" href="#who-we-are"><i class="fa-solid fa-shield-halved nav-link-icon d-lg-none me-2 text-warning"></i>About Us</a></li>
         </ul>
 
-        <!-- Right Action Items -->
-        <div class="d-flex align-items-center gap-2">
+        <!-- Mobile Divider -->
+        <div class="dropdown-mobile-divider d-lg-none"></div>
+
+        <!-- Right Action Items (Responsive Desktop + Mobile Grid) -->
+        <div class="navbar-action-cluster">
           <button type="button" id="btnInstallAppNav" class="pwa-nav-install-btn pwa-install-trigger" title="Install App on Phone / PC">
             <i class="fa-solid fa-mobile-screen-button"></i> <span>Install App</span>
           </button>
-          <a href="parcel.html" target="_blank" class="btn btn-sm btn-outline-warning fw-bold rounded-pill px-3 shadow-sm d-inline-flex align-items-center gap-1" title="Send a Parcel (Opens in new tab)">
+          <a href="parcel.html" target="_blank" class="btn-nav-parcel" title="Send a Parcel (Opens in new tab)">
             <i class="fa-solid fa-box-open"></i> <span>Send Parcel</span>
           </a>
-          <a href="track.html" class="btn btn-sm btn-outline-dark fw-semibold rounded-pill px-3 shadow-sm">
-            <i class="fa-solid fa-location-crosshairs text-primary-custom me-1"></i> Track Move
+          <a href="track.html" class="btn-nav-track">
+            <i class="fa-solid fa-location-crosshairs text-primary-custom"></i> <span>Track Move</span>
           </a>
-          <a href="tel:+917296831460" class="nav-phone-link d-none d-xl-inline-flex">
-            <i class="fa-solid fa-phone text-warning"></i> +91 72968 31460
+          <a href="tel:+917296831460" class="nav-phone-link">
+            <i class="fa-solid fa-phone text-warning"></i> <span>+91 72968 31460</span>
           </a>
           <a href="#calculator" class="btn-calc-nav">
-            <i class="fa-solid fa-calculator"></i> Cost Calculator
+            <i class="fa-solid fa-calculator"></i> <span>Cost Calculator</span>
           </a>
         </div>
       </div>

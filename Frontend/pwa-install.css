@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Rudraksha Packers & Movers - PWA Install Styling & UI Components
+   Rudraksha Packers & Movers - PWA Install Styling & Universal Modal
    ========================================================================== */
 
 /* Root Variables for PWA */
@@ -7,13 +7,13 @@
   --pwa-primary: #ea580c;
   --pwa-primary-hover: #c2410c;
   --pwa-dark: #0f172a;
-  --pwa-surface: rgba(255, 255, 255, 0.96);
-  --pwa-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.22), 0 4px 12px rgba(234, 88, 12, 0.15);
-  --pwa-radius: 16px;
+  --pwa-surface: rgba(255, 255, 255, 0.98);
+  --pwa-shadow: 0 16px 40px -4px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(234, 88, 12, 0.18);
+  --pwa-radius: 20px;
 }
 
 /* -------------------------------------------------------------
-   1. Floating Install Floating Badge / Navbar Button
+   1. Floating / Navbar Install Button
    ------------------------------------------------------------- */
 .pwa-nav-install-btn {
   display: inline-flex;
@@ -61,20 +61,20 @@
   position: fixed;
   bottom: 24px;
   left: 50%;
-  transform: translateX(-50%) translateY(150px);
+  transform: translateX(-50%) translateY(160px);
   width: calc(100% - 32px);
   max-width: 480px;
   background: var(--pwa-surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(234, 88, 12, 0.25);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(234, 88, 12, 0.3);
   border-radius: var(--pwa-radius);
   box-shadow: var(--pwa-shadow);
   padding: 14px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 12px;
   z-index: 99999;
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
   opacity: 0;
@@ -98,8 +98,8 @@
   height: 48px;
   border-radius: 12px;
   object-fit: cover;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
-  border: 1px solid #fed7aa;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border: 1.5px solid #fed7aa;
   flex-shrink: 0;
 }
 
@@ -109,7 +109,7 @@
 
 .pwa-banner-title {
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #1e293b;
   margin: 0;
   white-space: nowrap;
@@ -121,8 +121,8 @@
 }
 
 .pwa-badge-verified {
-  font-size: 0.68rem;
-  font-weight: 600;
+  font-size: 0.65rem;
+  font-weight: 700;
   background: #dcfce7;
   color: #166534;
   padding: 2px 6px;
@@ -149,21 +149,22 @@
   background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
   color: #ffffff;
   border: none;
-  font-size: 0.85rem;
+  font-size: 0.86rem;
   font-weight: 700;
   padding: 9px 16px;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 3px 10px rgba(234, 88, 12, 0.35);
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .pwa-btn-install-primary:hover {
   transform: scale(1.04);
-  box-shadow: 0 5px 15px rgba(234, 88, 12, 0.45);
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.48);
 }
 
 .pwa-btn-dismiss {
@@ -172,138 +173,248 @@
   color: #94a3b8;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 
 .pwa-btn-dismiss:hover {
   background: #e2e8f0;
-  color: #475569;
+  color: #334155;
 }
 
 /* -------------------------------------------------------------
-   3. iOS Modal Guide (Step-by-step for iPhone/iPad)
+   3. UNIVERSAL APP INSTALL MODAL (Android, iOS & Desktop)
    ------------------------------------------------------------- */
-.pwa-ios-modal-backdrop {
+.pwa-universal-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 100000;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.3s ease;
-  padding-bottom: env(safe-area-inset-bottom, 20px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 16px;
 }
 
-.pwa-ios-modal-backdrop.pwa-active {
+.pwa-universal-modal-backdrop.pwa-active {
   opacity: 1;
   visibility: visible;
 }
 
-.pwa-ios-modal {
+.pwa-universal-modal {
   background: #ffffff;
-  border-radius: 24px 24px 16px 16px;
+  border-radius: 24px;
   width: 100%;
-  max-width: 440px;
-  padding: 24px 20px;
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
-  transform: translateY(100%);
-  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+  max-width: 460px;
+  padding: 26px 22px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  transform: scale(0.92) translateY(20px);
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.25);
   text-align: center;
   position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
-.pwa-ios-modal-backdrop.pwa-active .pwa-ios-modal {
-  transform: translateY(0);
+.pwa-universal-modal-backdrop.pwa-active .pwa-universal-modal {
+  transform: scale(1) translateY(0);
 }
 
-.pwa-ios-handle {
-  width: 40px;
-  height: 5px;
-  background: #cbd5e1;
-  border-radius: 999px;
-  margin: 0 auto 16px auto;
+.pwa-modal-header {
+  margin-bottom: 16px;
 }
 
-.pwa-ios-title {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: #0f172a;
-  margin-bottom: 6px;
-}
-
-.pwa-ios-subtitle {
-  font-size: 0.88rem;
-  color: #64748b;
-  margin-bottom: 20px;
-}
-
-.pwa-ios-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  text-align: left;
-  margin-bottom: 22px;
-}
-
-.pwa-ios-step-item {
+.pwa-modal-app-badge {
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pwa-modal-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.25);
+  border: 2px solid #fed7aa;
+}
+
+.pwa-modal-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.pwa-modal-subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Device Selector Tabs */
+.pwa-device-tabs {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: 14px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 18px;
+}
+
+.pwa-device-tab {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pwa-device-tab.active {
+  background: #ffffff;
+  color: #ea580c;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 1-Click Direct Install Button in Modal */
+.pwa-direct-install-box {
+  margin-bottom: 18px;
+}
+
+.pwa-btn-direct-install {
+  width: 100%;
+  padding: 13px 18px;
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  font-size: 0.96rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4);
+  transition: all 0.2s ease;
+}
+
+.pwa-btn-direct-install:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(234, 88, 12, 0.55);
+}
+
+/* Step-by-Step Instruction Cards */
+.pwa-guide-pane {
+  display: none;
+}
+
+.pwa-guide-pane.active {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.pwa-step-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   background: #f8fafc;
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid #e2e8f0;
 }
 
-.pwa-ios-step-num {
+.pwa-step-num {
   width: 28px;
   height: 28px;
   border-radius: 50%;
   background: #ea580c;
   color: #ffffff;
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.82rem;
+  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-.pwa-ios-step-text {
-  font-size: 0.88rem;
+.pwa-step-text {
+  font-size: 0.86rem;
   color: #334155;
   font-weight: 500;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
-.pwa-ios-step-text strong {
+.pwa-step-text strong {
   color: #0f172a;
   font-weight: 700;
 }
 
-.pwa-ios-icon-badge {
+.pwa-badge-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #ffedd5;
+  color: #9a3412;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.pwa-badge-ios {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   background: #e0f2fe;
   color: #0369a1;
-  padding: 2px 6px;
+  font-weight: 700;
+  padding: 2px 7px;
   border-radius: 6px;
-  font-weight: 600;
+  font-size: 0.8rem;
 }
 
-.pwa-ios-close-btn {
+/* Feature Perks Bar */
+.pwa-perks-box {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  color: #166534;
+  font-weight: 600;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pwa-modal-close-btn {
   width: 100%;
   padding: 12px;
   background: #f1f5f9;
@@ -311,13 +422,14 @@
   border-radius: 12px;
   color: #475569;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
-.pwa-ios-close-btn:hover {
+.pwa-modal-close-btn:hover {
   background: #e2e8f0;
+  color: #1e293b;
 }
 
 /* -------------------------------------------------------------
@@ -360,6 +472,10 @@
   }
   .pwa-btn-install-primary {
     padding: 8px 12px;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
+  }
+  .pwa-universal-modal {
+    padding: 20px 16px;
+    border-radius: 20px;
   }
 }

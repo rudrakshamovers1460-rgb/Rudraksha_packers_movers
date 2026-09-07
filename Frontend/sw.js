@@ -24,6 +24,7 @@ const STATIC_ASSETS = [
   './driver.js',
   './pwa-install.js',
   './favicon.png',
+  './icon-192.png',
   './logo.png'
 ];
 
