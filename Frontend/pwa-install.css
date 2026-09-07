@@ -12,6 +12,33 @@
   --pwa-radius: 20px;
 }
 
+/* Minimal Toast Alert */
+.pwa-simple-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: rgba(15, 23, 42, 0.95);
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 100000;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+  max-width: 90%;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.pwa-simple-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
 /* -------------------------------------------------------------
    1. Floating / Navbar Install Button
    ------------------------------------------------------------- */
