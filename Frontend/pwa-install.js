@@ -1,18 +1,20 @@
 /**
- * Rudraksha Packers & Movers - PWA Universal Install Handler & Smart Hub
- * Supports Android, Chrome, Edge, Samsung Internet, iOS (iPhone/iPad), and PC
+ * Rudraksha Packers & Movers - PWA Direct 1-Click Installer
+ * Prioritizes 100% native 1-click install prompt on Android & Desktop
  */
 
 (function () {
   'use strict';
 
-  // 1. Register Service Worker
+  // 1. Register Service Worker with auto-update
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
         .register('./sw.js')
         .then((reg) => {
           console.log('[PWA] Service Worker active:', reg.scope);
+          // Check for service worker updates
+          if (reg.update) reg.update();
         })
         .catch((err) => {
           console.warn('[PWA] Service Worker registration:', err);
@@ -20,26 +22,49 @@
     });
   }
 
-  // Device & Mode Detection
+  // Device & Context
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  const isAndroid = /Android/.test(navigator.userAgent);
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
-  // Context: Admin vs Customer
   const isAdmin = window.location.pathname.includes('admin.html');
   const appName = isAdmin ? 'Rudraksha Admin Control' : 'Rudraksha Packers & Movers';
-  const appDesc = isAdmin ? 'Live Fleet, Booking & Rate Engine' : 'Fast Relocation & Instant Parcel Delivery';
+  const appDesc = isAdmin ? 'Live Fleets, Booking & Rates' : 'Fast Shifting & Parcel Delivery App';
   const appIcon = 'icon-192.png';
 
   let deferredPrompt = null;
+  let isAppInstalled = isStandalone;
 
-  // If already opened as standalone installed app, don't show prompts
+  // Listen for native install prompt event IMMEDIATELY
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    console.log('[PWA] Native 1-Click Install Prompt is READY!');
+
+    // Show bottom banner
+    const banner = document.getElementById('pwaBottomBanner');
+    if (banner && !sessionStorage.getItem('pwa_banner_dismissed')) {
+      banner.classList.add('pwa-show');
+    }
+  });
+
+  // App Installed Event
+  window.addEventListener('appinstalled', () => {
+    console.log('[PWA] App successfully installed!');
+    isAppInstalled = true;
+    deferredPrompt = null;
+    const banner = document.getElementById('pwaBottomBanner');
+    if (banner) banner.classList.remove('pwa-show');
+    const modal = document.getElementById('pwaUniversalModal');
+    if (modal) modal.classList.remove('pwa-active');
+  });
+
+  // If already running inside standalone app, exit early
   if (isStandalone) {
-    console.log('[PWA] Running in standalone installed mode');
+    console.log('[PWA] Running inside standalone installed app');
     return;
   }
 
-  // 2. Initialize PWA UI Elements
+  // 2. Initialize UI
   function initPwaUI() {
     // A. Bottom Banner
     const banner = document.createElement('div');
@@ -51,7 +76,7 @@
         <div class="pwa-banner-info">
           <div class="pwa-banner-title">
             <span>${appName}</span>
-            <span class="pwa-badge-verified">OFFICIAL APP</span>
+            <span class="pwa-badge-verified">APP</span>
           </div>
           <p class="pwa-banner-desc">${appDesc}</p>
         </div>
@@ -61,14 +86,14 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>
           </svg>
-          Install App
+          Install
         </button>
-        <button id="pwaBannerDismissBtn" class="pwa-btn-dismiss" title="Close Banner">&times;</button>
+        <button id="pwaBannerDismissBtn" class="pwa-btn-dismiss" title="Close">&times;</button>
       </div>
     `;
     document.body.appendChild(banner);
 
-    // B. Universal Multi-Device Install Modal
+    // B. Universal Modal (Only shown for iOS Safari or when native prompt is unsupported)
     const modalBackdrop = document.createElement('div');
     modalBackdrop.id = 'pwaUniversalModal';
     modalBackdrop.className = 'pwa-universal-modal-backdrop';
@@ -79,87 +104,60 @@
             <img src="${appIcon}" alt="App Icon" class="pwa-modal-icon" />
             <div style="text-align: left;">
               <h4 class="pwa-modal-title">${appName}</h4>
-              <p class="pwa-modal-subtitle">Official Mobile Application</p>
+              <p class="pwa-modal-subtitle">Official Mobile App</p>
             </div>
           </div>
         </div>
 
-        <!-- Direct Install Button (If browser supports native trigger) -->
-        <div class="pwa-direct-install-box" id="pwaDirectInstallWrapper">
+        <div class="pwa-direct-install-box">
           <button type="button" id="pwaModalDirectInstallBtn" class="pwa-btn-direct-install">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>
             </svg>
-            <span id="pwaDirectBtnText">1-Click Direct Install</span>
+            <span id="pwaDirectBtnText">📲 Direct Install App Now</span>
           </button>
         </div>
 
-        <!-- Tabs for Switching Devices -->
-        <div class="pwa-device-tabs">
-          <button type="button" class="pwa-device-tab ${isAndroid || (!isIOS && !isAndroid) ? 'active' : ''}" data-target="pwaGuideAndroid">
-            <i class="fa-brands fa-android"></i> Android (Chrome)
-          </button>
-          <button type="button" class="pwa-device-tab ${isIOS ? 'active' : ''}" data-target="pwaGuideIOS">
-            <i class="fa-brands fa-apple"></i> iPhone (Safari)
-          </button>
-        </div>
-
-        <!-- Android Guide -->
-        <div class="pwa-guide-pane ${isAndroid || (!isIOS && !isAndroid) ? 'active' : ''}" id="pwaGuideAndroid">
-          <div class="pwa-step-card">
+        <!-- iOS Guide (Only relevant for Apple Safari) -->
+        <div id="pwaIosGuideSection" style="${isIOS ? 'display:block;' : 'display:none;'}">
+          <p style="font-size:0.86rem; color:#64748b; margin-bottom:12px;">iPhone / Safari me install karne ke liye:</p>
+          <div class="pwa-step-card" style="margin-bottom:8px;">
             <span class="pwa-step-num">1</span>
-            <span class="pwa-step-text">Chrome browser mein upar daayein taraf <strong>3 dots (⋮)</strong> menu par tap karein.</span>
+            <span class="pwa-step-text">Safari ke niche <span class="pwa-badge-ios">⬆️ Share Button</span> par tap karein.</span>
           </div>
-          <div class="pwa-step-card">
+          <div class="pwa-step-card" style="margin-bottom:8px;">
             <span class="pwa-step-num">2</span>
-            <span class="pwa-step-text">Menu list mein <span class="pwa-badge-action">📲 Install app</span> ya <strong>"Add to Home screen"</strong> chunein.</span>
+            <span class="pwa-step-text">Menu me <span class="pwa-badge-ios">➕ Add to Home Screen</span> chunein.</span>
           </div>
-          <div class="pwa-step-card">
+          <div class="pwa-step-card" style="margin-bottom:14px;">
             <span class="pwa-step-num">3</span>
-            <span class="pwa-step-text"><strong>"Install"</strong> par tap karein. App turant aapke phone par aa jayegi!</span>
-          </div>
-        </div>
-
-        <!-- iOS Guide -->
-        <div class="pwa-guide-pane ${isIOS ? 'active' : ''}" id="pwaGuideIOS">
-          <div class="pwa-step-card">
-            <span class="pwa-step-num">1</span>
-            <span class="pwa-step-text">Safari browser mein screen ke niche <span class="pwa-badge-ios">⬆️ Share Button</span> par tap karein.</span>
-          </div>
-          <div class="pwa-step-card">
-            <span class="pwa-step-num">2</span>
-            <span class="pwa-step-text">Niche scroll karke <span class="pwa-badge-ios">➕ Add to Home Screen</span> par click karein.</span>
-          </div>
-          <div class="pwa-step-card">
-            <span class="pwa-step-num">3</span>
-            <span class="pwa-step-text">Upar daayein kone mein <strong>"Add"</strong> dabayein. App icon iPhone screen par ban jayega!</span>
+            <span class="pwa-step-text">Upar daayein kone me <strong>"Add"</strong> dabayein.</span>
           </div>
         </div>
 
         <div class="pwa-perks-box">
           <i class="fa-solid fa-bolt"></i>
-          <span>Superfast Booking &bull; Live GPS Tracking &bull; 0 MB Storage</span>
+          <span>Superfast &bull; Live GPS Tracking &bull; 0 MB Storage</span>
         </div>
 
-        <button type="button" id="pwaModalCloseBtn" class="pwa-modal-close-btn">Done / Close</button>
+        <button type="button" id="pwaModalCloseBtn" class="pwa-modal-close-btn">Close</button>
       </div>
     `;
     document.body.appendChild(modalBackdrop);
 
-    // Bind Tab Switching
-    document.querySelectorAll('.pwa-device-tab').forEach((tab) => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.pwa-device-tab').forEach((t) => t.classList.remove('active'));
-        document.querySelectorAll('.pwa-guide-pane').forEach((p) => p.classList.remove('active'));
-        tab.classList.add('active');
-        const targetId = tab.getAttribute('data-target');
-        const targetPane = document.getElementById(targetId);
-        if (targetPane) targetPane.classList.add('active');
-      });
-    });
-
-    // Bind Close Buttons
+    // Event Bindings
+    const bannerInstallBtn = document.getElementById('pwaBannerInstallBtn');
+    const bannerDismissBtn = document.getElementById('pwaBannerDismissBtn');
     const modalCloseBtn = document.getElementById('pwaModalCloseBtn');
+    const modalDirectInstallBtn = document.getElementById('pwaModalDirectInstallBtn');
+
+    if (bannerInstallBtn) bannerInstallBtn.addEventListener('click', handleDirectInstall);
+    if (bannerDismissBtn) {
+      bannerDismissBtn.addEventListener('click', () => {
+        banner.classList.remove('pwa-show');
+        sessionStorage.setItem('pwa_banner_dismissed', 'true');
+      });
+    }
     if (modalCloseBtn) {
       modalCloseBtn.addEventListener('click', () => {
         modalBackdrop.classList.remove('pwa-active');
@@ -171,73 +169,34 @@
       }
     });
 
-    // Direct Install Button inside Modal
-    const modalDirectInstallBtn = document.getElementById('pwaModalDirectInstallBtn');
     if (modalDirectInstallBtn) {
-      modalDirectInstallBtn.addEventListener('click', () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-              modalBackdrop.classList.remove('pwa-active');
-              const b = document.getElementById('pwaBottomBanner');
-              if (b) b.classList.remove('pwa-show');
-            }
-            deferredPrompt = null;
-          });
-        } else {
-          // If on Android without native prompt, animate step 1 & 2
-          const targetTab = isIOS ? 'pwaGuideIOS' : 'pwaGuideAndroid';
-          const pane = document.getElementById(targetTab);
-          if (pane) {
-            pane.classList.add('active');
-            pane.scrollIntoView({ behavior: 'smooth' });
-          }
-          const directBtnText = document.getElementById('pwaDirectBtnText');
-          if (directBtnText) {
-            directBtnText.innerText = isIOS ? 'Follow 3-Step Guide Below' : 'Follow Steps 1-3 Below (Browser Menu)';
-          }
-        }
-      });
+      modalDirectInstallBtn.addEventListener('click', handleDirectInstall);
     }
 
-    // Banner buttons
-    const bannerInstallBtn = document.getElementById('pwaBannerInstallBtn');
-    const bannerDismissBtn = document.getElementById('pwaBannerDismissBtn');
-    if (bannerInstallBtn) {
-      bannerInstallBtn.addEventListener('click', triggerInstallFlow);
-    }
-    if (bannerDismissBtn) {
-      bannerDismissBtn.addEventListener('click', () => {
-        banner.classList.remove('pwa-show');
-        sessionStorage.setItem('pwa_banner_dismissed', 'true');
-      });
-    }
-
-    // Auto-show bottom banner after 1.5s
-    setTimeout(() => {
-      if (!sessionStorage.getItem('pwa_banner_dismissed')) {
-        banner.classList.add('pwa-show');
-      }
-    }, 1500);
-
-    // Bind all install trigger buttons on the page
+    // Bind all buttons with .pwa-install-trigger, #btnInstallApp, #btnInstallAppNav, .btn-mobile-nav-app
     document.querySelectorAll('.pwa-install-trigger, #btnInstallApp, #btnInstallAppNav, #btnAdminInstall, .btn-mobile-nav-app').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
-        triggerInstallFlow();
+        handleDirectInstall();
       });
     });
 
-    // Auto-close mobile navbar when link is clicked
+    // Auto-show banner after 1.2s if prompt ready
+    setTimeout(() => {
+      if (!sessionStorage.getItem('pwa_banner_dismissed') && (deferredPrompt || !isStandalone)) {
+        banner.classList.add('pwa-show');
+      }
+    }, 1200);
+
+    // Auto close navbar on link click
     document.querySelectorAll('.main-navbar .nav-link-custom, .main-navbar a').forEach((link) => {
       link.addEventListener('click', () => {
         const navCollapse = document.getElementById('navbarContent');
         const hamburgerBtn = document.getElementById('mainHamburgerBtn');
         if (navCollapse && navCollapse.classList.contains('show')) {
           if (window.bootstrap && window.bootstrap.Collapse) {
-            const bsCollapse = window.bootstrap.Collapse.getInstance(navCollapse) || new window.bootstrap.Collapse(navCollapse);
-            if (bsCollapse) bsCollapse.hide();
+            const bs = window.bootstrap.Collapse.getInstance(navCollapse) || new window.bootstrap.Collapse(navCollapse);
+            if (bs) bs.hide();
           } else {
             navCollapse.classList.remove('show');
           }
@@ -247,55 +206,77 @@
     });
   }
 
-  // 3. Trigger Installation Flow
-  window.triggerPwaInstall = triggerInstallFlow;
-  function triggerInstallFlow() {
+  // 3. Direct 1-Click Installation Logic
+  window.triggerPwaInstall = handleDirectInstall;
+  async function handleDirectInstall() {
+    // If prompt is immediately ready: Fire native Android prompt!
     if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        console.log('[PWA] User response:', choiceResult.outcome);
+      try {
+        await deferredPrompt.prompt();
+        const choiceResult = await deferredPrompt.userChoice;
+        console.log('[PWA] User install choice:', choiceResult.outcome);
         if (choiceResult.outcome === 'accepted') {
-          const b = document.getElementById('pwaBottomBanner');
-          if (b) b.classList.remove('pwa-show');
-          const m = document.getElementById('pwaUniversalModal');
-          if (m) m.classList.remove('pwa-active');
+          const banner = document.getElementById('pwaBottomBanner');
+          if (banner) banner.classList.remove('pwa-show');
+          const modal = document.getElementById('pwaUniversalModal');
+          if (modal) modal.classList.remove('pwa-active');
         }
         deferredPrompt = null;
-      });
-    } else {
-      // Open the Universal Install Guide Modal
-      const modal = document.getElementById('pwaUniversalModal');
-      if (modal) {
-        modal.classList.add('pwa-active');
+        return;
+      } catch (err) {
+        console.warn('[PWA] Direct prompt error:', err);
       }
+    }
+
+    // If deferredPrompt is not yet ready, wait up to 1.5 seconds for it
+    const promptArrived = await waitForDeferredPrompt(1500);
+    if (promptArrived && deferredPrompt) {
+      try {
+        await deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        if (choice.outcome === 'accepted') {
+          const banner = document.getElementById('pwaBottomBanner');
+          if (banner) banner.classList.remove('pwa-show');
+        }
+        deferredPrompt = null;
+        return;
+      } catch (err) {}
+    }
+
+    // If on iOS: Open simple iOS Share modal
+    if (isIOS) {
+      const modal = document.getElementById('pwaUniversalModal');
+      if (modal) modal.classList.add('pwa-active');
+      return;
+    }
+
+    // If on Android and native prompt didn't fire, it means:
+    // Either already installed on device, or browser requires 3-dot menu
+    // Open Chrome's menu guidance or show alert
+    const modal = document.getElementById('pwaUniversalModal');
+    if (modal) {
+      const directBtnText = document.getElementById('pwaDirectBtnText');
+      if (directBtnText) {
+        directBtnText.innerText = '📲 Tap Chrome 3-Dots (⋮) ➔ Install App';
+      }
+      modal.classList.add('pwa-active');
     }
   }
 
-  // 4. Capture native beforeinstallprompt
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    console.log('[PWA] Native beforeinstallprompt captured!');
-    const banner = document.getElementById('pwaBottomBanner');
-    if (banner) banner.classList.add('pwa-show');
+  function waitForDeferredPrompt(timeoutMs) {
+    return new Promise((resolve) => {
+      if (deferredPrompt) return resolve(true);
+      const timer = setTimeout(() => resolve(false), timeoutMs);
+      const listener = () => {
+        clearTimeout(timer);
+        window.removeEventListener('beforeinstallprompt', listener);
+        resolve(true);
+      };
+      window.addEventListener('beforeinstallprompt', listener, { once: true });
+    });
+  }
 
-    const directBtnText = document.getElementById('pwaDirectBtnText');
-    if (directBtnText) {
-      directBtnText.innerText = '1-Click Direct Install (Ready)';
-    }
-  });
-
-  // 5. App successfully installed
-  window.addEventListener('appinstalled', () => {
-    console.log('[PWA] Rudraksha App successfully installed on device!');
-    const banner = document.getElementById('pwaBottomBanner');
-    if (banner) banner.classList.remove('pwa-show');
-    const modal = document.getElementById('pwaUniversalModal');
-    if (modal) modal.classList.remove('pwa-active');
-    deferredPrompt = null;
-  });
-
-  // Initialize on DOM load
+  // Run when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initPwaUI);
   } else {

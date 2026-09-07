@@ -1,11 +1,10 @@
 /**
- * Service Worker for Rudraksha Packers & Movers PWA
- * Fast UI caching + Network-first live synchronization for APIs
+ * Service Worker for Rudraksha Packers & Movers PWA (v2.0.0)
+ * Ultra-resilient, crash-proof caching with live network priority
  */
 
-const CACHE_NAME = 'rudraksha-pwa-v1.0.0';
+const CACHE_NAME = 'rudraksha-pwa-v2.0.0';
 const STATIC_ASSETS = [
-  './',
   './index.html',
   './parcel.html',
   './track.html',
@@ -28,27 +27,30 @@ const STATIC_ASSETS = [
   './logo.png'
 ];
 
-// Install Event - Pre-cache essential assets
+// Install Event - Pre-cache with resilient per-item handling
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      // Use addAll with resilient error handling
-      return Promise.allSettled(
-        STATIC_ASSETS.map(url => cache.add(url).catch(err => console.warn('[PWA SW] Pre-cache skip:', url, err)))
-      );
+    caches.open(CACHE_NAME).then(async (cache) => {
+      for (const url of STATIC_ASSETS) {
+        try {
+          await cache.add(url);
+        } catch (err) {
+          console.warn('[PWA SW] Pre-cache skipped:', url, err);
+        }
+      }
     }).then(() => self.skipWaiting())
   );
 });
 
-// Activate Event - Clean up stale old caches
+// Activate Event - Clean up any old broken caches immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            console.log('[PWA SW] Clearing old cache:', cache);
-            return caches.delete(cache);
+        cacheNames.map((name) => {
+          if (name !== CACHE_NAME) {
+            console.log('[PWA SW] Purging old cache:', name);
+            return caches.delete(name);
           }
         })
       );
@@ -56,20 +58,21 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event - Network first for APIs / dynamic requests, Cache-first/stale-while-revalidate for static assets
+// Fetch Event - Crash-proof strategy
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // 1. Always bypass cache for non-GET requests (POST, PUT, DELETE)
+  // 1. Never intercept non-GET requests
   if (request.method !== 'GET') {
     return;
   }
 
-  // 2. Always fetch LIVE for API calls, backend routes, map geocoders, and Firebase
+  // 2. Completely bypass APIs, maps, geocoders, Firebase & backend
   if (
     url.pathname.startsWith('/api') ||
     url.port === '5000' ||
+    url.port === '3000' ||
     url.hostname.includes('onrender.com') ||
     url.hostname.includes('openstreetmap.org') ||
     url.hostname.includes('komoot.io') ||
@@ -78,24 +81,53 @@ self.addEventListener('fetch', (event) => {
     url.hostname.includes('firebase') ||
     url.hostname.includes('googleapis.com')
   ) {
-    event.respondWith(fetch(request));
+    return; // Let browser fetch natively without interference
+  }
+
+  // 3. Navigation Requests (Opening the App / Loading Pages): Network-first with Cache Fallback
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((networkRes) => {
+          if (networkRes && networkRes.status === 200) {
+            const clone = networkRes.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return networkRes;
+        })
+        .catch(() => {
+          // If offline or network fails, load cached version
+          return caches.match(request).then((cached) => {
+            return cached || caches.match('./index.html');
+          });
+        })
+    );
     return;
   }
 
-  // 3. For local static assets: Stale-While-Revalidate strategy
+  // 4. Static Assets (CSS, JS, Images, Fonts): Cache-first with Network Fallback
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
-      const fetchPromise = fetch(request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseToCache);
-          });
-        }
-        return networkResponse;
-      }).catch(() => cachedResponse);
+      if (cachedResponse) {
+        // Revalidate in background
+        fetch(request)
+          .then((netRes) => {
+            if (netRes && netRes.status === 200) {
+              caches.open(CACHE_NAME).then((cache) => cache.put(request, netRes));
+            }
+          })
+          .catch(() => {});
+        return cachedResponse;
+      }
 
-      return cachedResponse || fetchPromise;
+      // If not in cache, fetch from network
+      return fetch(request).then((networkRes) => {
+        if (networkRes && networkRes.status === 200) {
+          const clone = networkRes.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+        }
+        return networkRes;
+      });
     })
   );
 });
