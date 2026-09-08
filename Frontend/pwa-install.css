@@ -506,3 +506,20 @@
     border-radius: 20px;
   }
 }
+
+/* Mobile-Only Enforcement: App download & install UI is STRICTLY hidden on Desktop / PC / Laptop view */
+@media (min-width: 992px) {
+  .pwa-bottom-banner,
+  .pwa-bottom-banner.pwa-show,
+  .pwa-nav-install-btn,
+  #btnInstallAppNav,
+  .btn-mobile-nav-app,
+  .pwa-universal-modal-backdrop,
+  .pwa-universal-modal-backdrop.pwa-active {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
+

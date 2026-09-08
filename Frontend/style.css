@@ -111,6 +111,10 @@ body {
 
 .navbar-container {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .brand-logo-container {
@@ -118,6 +122,7 @@ body {
   align-items: center;
   gap: 12px;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .brand-logo-icon {
@@ -346,6 +351,24 @@ body {
     padding: 8px 0;
   }
 
+  .navbar-container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+  }
+
+  .brand-logo-container {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: calc(100% - 50px);
+  }
+
+  .custom-hamburger-btn {
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
   .main-navbar .navbar-collapse {
     background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(20px);
@@ -456,6 +479,30 @@ body {
     width: 100%;
     background: #ffffff;
     border-color: #e2e8f0;
+  }
+}
+
+/* Extra small mobile adjustments */
+@media (max-width: 480px) {
+  .brand-logo-container {
+    gap: 8px;
+  }
+  .brand-logo-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.05rem;
+    border-radius: 10px;
+  }
+  .brand-title-text {
+    font-size: 1.15rem;
+  }
+  .brand-subtitle-text {
+    font-size: 0.6rem;
+    letter-spacing: 0.6px;
+  }
+  .custom-hamburger-btn {
+    width: 38px;
+    height: 38px;
   }
 }
 
@@ -1886,53 +1933,6 @@ body {
 
 .custom-blue-footer .social-circle-btn.bg-linkedin {
   background-color: #0a66c2;
-}
-
-/* Chat Now With AI Badge */
-.custom-blue-footer .chat-now-btn {
-  background-color: #00b84c;
-  color: #ffffff;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 18px 8px 14px;
-  border-radius: 14px;
-  text-decoration: none;
-  box-shadow: 0 4px 14px rgba(0, 184, 76, 0.35);
-  transition: transform 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-.custom-blue-footer .chat-now-btn:hover {
-  background-color: #00a343;
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 184, 76, 0.45);
-}
-
-.custom-blue-footer .chat-icon-box {
-  font-size: 1.6rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.custom-blue-footer .chat-text-box {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.custom-blue-footer .chat-title {
-  font-weight: 700;
-  font-size: 1rem;
-  line-height: 1.1;
-}
-
-.custom-blue-footer .chat-sub {
-  font-size: 0.65rem;
-  opacity: 0.95;
-  line-height: 1;
-  letter-spacing: 0.3px;
 }
 
 /* Copyright Bottom Bar */

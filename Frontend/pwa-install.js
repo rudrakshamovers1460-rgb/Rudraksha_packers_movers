@@ -31,15 +31,22 @@
 
   let deferredPrompt = null;
 
+  // Detect mobile device or viewport (< 992px)
+  function isMobileDevice() {
+    const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const mobileWidth = window.innerWidth < 992;
+    return mobileUA || mobileWidth;
+  }
+
   // Listen for native install prompt event IMMEDIATELY
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     console.log('[PWA] Native 1-Click prompt is ready!');
 
-    // Show bottom banner
+    // Show bottom banner ONLY on mobile view
     const banner = document.getElementById('pwaBottomBanner');
-    if (banner && !sessionStorage.getItem('pwa_banner_dismissed')) {
+    if (banner && isMobileDevice() && !sessionStorage.getItem('pwa_banner_dismissed')) {
       banner.classList.add('pwa-show');
     }
 
@@ -145,12 +152,19 @@
       });
     });
 
-    // Auto-show bottom banner after 1 second
+    // Auto-show bottom banner after 1 second (Mobile only)
     setTimeout(() => {
-      if (!sessionStorage.getItem('pwa_banner_dismissed')) {
+      if (isMobileDevice() && !sessionStorage.getItem('pwa_banner_dismissed')) {
         banner.classList.add('pwa-show');
       }
     }, 1000);
+
+    // Hide banner on resize if window expands to desktop view
+    window.addEventListener('resize', () => {
+      if (!isMobileDevice() && banner.classList.contains('pwa-show')) {
+        banner.classList.remove('pwa-show');
+      }
+    });
 
     // Auto close navbar on link click
     document.querySelectorAll('.main-navbar .nav-link-custom, .main-navbar a').forEach((link) => {

@@ -58,17 +58,12 @@
         </div>
       </a>
 
-      <!-- Mobile Controls: Quick App Install Badge + Custom Animated Hamburger Button -->
-      <div class="d-flex align-items-center gap-2 d-lg-none">
-        <button type="button" class="btn-mobile-nav-app pwa-install-trigger" title="Install App on Mobile">
-          <i class="fa-solid fa-mobile-screen-button"></i> <span>App</span>
-        </button>
-        <button class="navbar-toggler custom-hamburger-btn border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation" id="mainHamburgerBtn">
-          <span class="hamburger-line top-line"></span>
-          <span class="hamburger-line mid-line"></span>
-          <span class="hamburger-line bot-line"></span>
-        </button>
-      </div>
+      <!-- Custom Animated Hamburger Button (Far Right on Mobile) -->
+      <button class="navbar-toggler custom-hamburger-btn border-0 shadow-none ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation" id="mainHamburgerBtn">
+        <span class="hamburger-line top-line"></span>
+        <span class="hamburger-line mid-line"></span>
+        <span class="hamburger-line bot-line"></span>
+      </button>
 
       <!-- Streamlined Nav Items & Right Actions -->
       <div class="collapse navbar-collapse" id="navbarContent">
@@ -85,7 +80,7 @@
 
         <!-- Right Action Items (Responsive Desktop + Mobile Grid) -->
         <div class="navbar-action-cluster">
-          <button type="button" id="btnInstallAppNav" class="pwa-nav-install-btn pwa-install-trigger" title="Install App on Phone / PC">
+          <button type="button" id="btnInstallAppNav" class="pwa-nav-install-btn pwa-install-trigger d-lg-none" title="Install App on Mobile">
             <i class="fa-solid fa-mobile-screen-button"></i> <span>Install App</span>
           </button>
           <a href="parcel.html" target="_blank" class="btn-nav-parcel" title="Send a Parcel (Opens in new tab)">
@@ -1288,33 +1283,18 @@
           </ul>
         </div>
 
-        <!-- Column 3: Stay Connected on & Chat Badge -->
-        <div class="col-lg-4 col-md-3 d-flex flex-column justify-content-between position-relative">
-          <div>
-            <h5 class="footer-col-title">Stay Connected on</h5>
-            <div class="social-icon-group d-flex align-items-center gap-3">
-              <a href="#" class="social-circle-btn bg-facebook" aria-label="Facebook">
-                <i class="fa-brands fa-facebook-f"></i>
-              </a>
-              <a href="#" class="social-circle-btn bg-instagram" aria-label="Instagram">
-                <i class="fa-brands fa-instagram"></i>
-              </a>
-              <a href="#" class="social-circle-btn bg-linkedin" aria-label="LinkedIn">
-                <i class="fa-brands fa-linkedin-in"></i>
-              </a>
-            </div>
-          </div>
-
-          <!-- Chat Now With AI Badge -->
-          <div class="chat-now-wrapper mt-4 mt-md-auto align-self-end">
-            <a href="https://wa.me/919015850511" target="_blank" class="chat-now-btn">
-              <div class="chat-icon-box">
-                <i class="fa-brands fa-whatsapp"></i>
-              </div>
-              <div class="chat-text-box">
-                <span class="chat-title">Chat Now</span>
-                <span class="chat-sub">With AI</span>
-              </div>
+        <!-- Column 3: Stay Connected on -->
+        <div class="col-lg-4 col-md-3">
+          <h5 class="footer-col-title">Stay Connected on</h5>
+          <div class="social-icon-group d-flex align-items-center gap-3">
+            <a href="#" class="social-circle-btn bg-facebook" aria-label="Facebook">
+              <i class="fa-brands fa-facebook-f"></i>
+            </a>
+            <a href="#" class="social-circle-btn bg-instagram" aria-label="Instagram">
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a href="#" class="social-circle-btn bg-linkedin" aria-label="LinkedIn">
+              <i class="fa-brands fa-linkedin-in"></i>
             </a>
           </div>
         </div>
