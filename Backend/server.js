@@ -12,9 +12,14 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 
-const ADMIN_USER = process.env.ADMIN_USER || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'rudraksha@admin2026';
-const ADMIN_SECRET_KEY = process.env.ADMIN_SECRET_KEY || 'rudraksha_enterprise_secret_2026';
+const isProduction = process.env.NODE_ENV === 'production';
+const ADMIN_USER = process.env.ADMIN_USER || (isProduction ? '' : 'admin');
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || (isProduction ? '' : 'local-dev-only-change-me');
+const ADMIN_SECRET_KEY = process.env.ADMIN_SECRET_KEY || (isProduction ? '' : 'local-dev-secret-change-me');
+
+if (!isProduction && (!process.env.ADMIN_PASSWORD || !process.env.ADMIN_SECRET_KEY)) {
+  console.warn('Warning: development admin credentials are active. Set ADMIN_USER, ADMIN_PASSWORD and ADMIN_SECRET_KEY before deployment.');
+}
 
 function generateAdminToken() {
   const payload = JSON.stringify({ role: 'admin', time: Date.now() });
@@ -30,14 +35,24 @@ function verifyAdminToken(token) {
     const [payloadStr, hmac] = decoded.split('::');
     if (!payloadStr || !hmac) return false;
     const expectedHmac = crypto.createHmac('sha256', ADMIN_SECRET_KEY).update(payloadStr).digest('hex');
-    if (hmac !== expectedHmac) return false;
+    const received = Buffer.from(hmac, 'utf8');
+    const expected = Buffer.from(expectedHmac, 'utf8');
+    if (received.length !== expected.length || !crypto.timingSafeEqual(received, expected)) return false;
     const payload = JSON.parse(payloadStr);
+    if (payload.role !== 'admin' || !Number.isFinite(payload.time) || payload.time > Date.now()) return false;
     // Token valid for 7 days
     if (Date.now() - payload.time > 7 * 24 * 60 * 60 * 1000) return false;
     return true;
   } catch {
     return false;
   }
+}
+
+function requireAdmin(req, res, next) {
+  if (!ADMIN_USER || !ADMIN_PASSWORD || !ADMIN_SECRET_KEY || !verifyAdminToken(req.headers.authorization)) {
+    return res.status(401).json({ error: 'Admin authentication required.' });
+  }
+  next();
 }
 
 // Health Check
@@ -62,7 +77,11 @@ app.post('/api/admin/login', (req, res) => {
       return res.status(400).json({ error: 'Password is required.' });
     }
 
-    const isUserValid = !username || username.trim().toLowerCase() === ADMIN_USER.toLowerCase();
+    if (!ADMIN_USER || !ADMIN_PASSWORD || !ADMIN_SECRET_KEY) {
+      return res.status(503).json({ error: 'Admin credentials are not configured on the server.' });
+    }
+
+    const isUserValid = username && username.trim().toLowerCase() === ADMIN_USER.toLowerCase();
     const isPassValid = password.trim() === ADMIN_PASSWORD;
 
     if (!isUserValid || !isPassValid) {
@@ -87,6 +106,125 @@ app.get('/api/admin/verify', (req, res) => {
     return res.status(401).json({ valid: false, error: 'Unauthorized or session expired.' });
   }
   res.json({ valid: true, message: 'Admin session is active.' });
+});
+
+/* ==========================================================================
+   RIDER APPLICATION ENDPOINTS
+   ========================================================================== */
+app.get('/api/rider-applications', requireAdmin, async (req, res, next) => {
+  try {
+    const applications = await db.getRiderApplications();
+    res.json({ applications });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/rider-applications', async (req, res, next) => {
+  try {
+    const { name, phone, city, shift, vehType, vehNum, dlNum } = req.body;
+    const cleanPhone = String(phone || '').replace(/\D/g, '');
+
+    if (!name || !city || !cleanPhone || cleanPhone.length !== 10 || !vehNum || !dlNum) {
+      return res.status(400).json({ error: 'Please fill all required rider partner details.' });
+    }
+
+    const existingApps = await db.getRiderApplications();
+    const duplicate = existingApps.find(app => String(app.phone || '').replace(/\D/g, '') === cleanPhone);
+    if (duplicate) {
+      return res.status(409).json({
+        error: 'This mobile number already has a rider application on file.',
+        application: duplicate,
+        message: `Application already submitted for +91 ${cleanPhone}.`
+      });
+    }
+
+    const application = await db.createRiderApplication({
+      id: `app-${Date.now()}`,
+      name: String(name).trim(),
+      phone: cleanPhone,
+      city: String(city).trim(),
+      shift: shift || 'Full Time (8-10 Hours)',
+      vehType: vehType || 'Bike / Scooter',
+      vehNum: String(vehNum).trim(),
+      dlNum: String(dlNum).trim(),
+      status: 'Pending',
+      date: new Date().toISOString(),
+      created_at: new Date().toISOString()
+    });
+
+    res.status(201).json({ success: true, application, message: 'Rider application submitted successfully.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/rider-applications/:id/approve', requireAdmin, async (req, res, next) => {
+  try {
+    const { pin } = req.body;
+    const applications = await db.getRiderApplications();
+    const app = applications.find(item => item.id === req.params.id);
+
+    if (!app) {
+      return res.status(404).json({ error: 'Rider application not found.' });
+    }
+
+    const driverId = app.driverId || `RDR-${String(app.phone).slice(-4)}`;
+    const driverPin = pin || app.pin || String(Math.floor(1000 + Math.random() * 9000));
+    const phoneClean = String(app.phone || '').replace(/\D/g, '');
+
+    const existingDrivers = await db.getDrivers();
+    const matchedDriver = existingDrivers.find(d => String(d.phone || '').replace(/\D/g, '') === phoneClean);
+
+    const driverPayload = {
+      id: matchedDriver?.id || driverId,
+      driver_name: app.name,
+      phone: phoneClean,
+      vehicle_number: app.vehNum || app.vehicle_number || '',
+      vehicle_type: app.vehType || app.vehicle_type || 'Bike / Scooter',
+      status: 'available',
+      rating: matchedDriver?.rating || 4.8,
+      pin: driverPin,
+      onDuty: true,
+      approved_at: new Date().toISOString(),
+      created_at: matchedDriver?.created_at || new Date().toISOString()
+    };
+
+    if (matchedDriver) {
+      await db.updateDriver(matchedDriver.id, driverPayload);
+    } else {
+      await db.createDriver(driverPayload);
+    }
+
+    const updatedApp = await db.updateRiderApplication(app.id, {
+      status: 'Approved',
+      driverId,
+      pin: driverPin,
+      approved_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    });
+
+    res.json({ success: true, application: updatedApp, driver: driverPayload, message: 'Rider approved successfully.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/rider-applications/:id/reject', requireAdmin, async (req, res, next) => {
+  try {
+    const applications = await db.getRiderApplications();
+    const app = applications.find(item => item.id === req.params.id);
+    if (!app) {
+      return res.status(404).json({ error: 'Rider application not found.' });
+    }
+    const updated = await db.updateRiderApplication(app.id, {
+      status: 'Rejected',
+      updated_at: new Date().toISOString()
+    });
+    res.json({ success: true, application: updated, message: 'Rider application rejected.' });
+  } catch (err) {
+    next(err);
+  }
 });
 
 /* ==========================================================================
@@ -129,7 +267,7 @@ app.post('/api/otp/verify', (req, res) => {
    ========================================================================== */
 
 // 1. Get all bookings (Admin)
-app.get('/api/bookings', async (req, res, next) => {
+app.get('/api/bookings', requireAdmin, async (req, res, next) => {
   try {
     const bookings = await db.getBookings();
     res.json({ bookings });
@@ -161,16 +299,24 @@ app.post('/api/bookings', async (req, res, next) => {
     const drop = body.drop_address || body.drop;
     const date = body.shifting_date || body.date;
 
-    if (!name || !phone || !pickup || !drop || !date) {
+    if (!name || !phone || phone.length !== 10 || !pickup || !drop || !date) {
       return res.status(400).json({ error: 'Please provide name, phone, pickup, drop and shifting date.' });
     }
 
-    const bookingId = body.id || `RB-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+    if (body.phone_verified !== true) {
+      return res.status(400).json({ error: 'Phone verification is required before booking.' });
+    }
+
+    const bookingId = `RB-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 
     // Normalize amount
     let totalAmt = 0;
-    if (body.total_amount) totalAmt = Number(body.total_amount);
+    if (body.total_amount !== undefined) totalAmt = Number(body.total_amount);
     else if (body.estimatedTotal) totalAmt = Number(String(body.estimatedTotal).replace(/[^\d.]/g, '')) || 0;
+
+    if (!Number.isFinite(totalAmt) || totalAmt < 0) {
+      return res.status(400).json({ error: 'Total amount must be a valid non-negative number.' });
+    }
 
     const bookingPayload = {
       id: bookingId,
@@ -226,7 +372,7 @@ app.post('/api/bookings', async (req, res, next) => {
 });
 
 // 4. Update Booking Status
-app.patch('/api/bookings/:id/status', async (req, res, next) => {
+app.patch('/api/bookings/:id/status', requireAdmin, async (req, res, next) => {
   try {
     const { status, notes } = req.body;
     const allowed = ['received', 'reviewing', 'confirmed', 'driver_assigned', 'in_transit', 'delivered', 'cancelled'];
@@ -249,7 +395,7 @@ app.patch('/api/bookings/:id/status', async (req, res, next) => {
 });
 
 // 5. Assign Driver & Vehicle
-app.post('/api/bookings/:id/assign', async (req, res, next) => {
+app.post('/api/bookings/:id/assign', requireAdmin, async (req, res, next) => {
   try {
     const { driver_id, driver_name, driver_phone, vehicle_number } = req.body;
     if (!driver_name || !driver_phone || !vehicle_number) {
@@ -299,7 +445,7 @@ app.get('/api/parcels/rates', async (req, res, next) => {
 });
 
 // 2. Get All Parcels (Admin)
-app.get('/api/parcels', async (req, res, next) => {
+app.get('/api/parcels', requireAdmin, async (req, res, next) => {
   try {
     const parcels = await db.getParcels();
     const { status, search } = req.query;
@@ -347,13 +493,13 @@ app.post('/api/parcels', async (req, res, next) => {
     const pickupAddress = body.pickup_address || body.pickupAddress;
     const dropAddress = body.drop_address || body.dropAddress;
 
-    if (!senderName || !senderPhone || !receiverName || !receiverPhone || !pickupAddress || !dropAddress) {
+    if (!senderName || senderPhone.length !== 10 || !receiverName || receiverPhone.length !== 10 || !pickupAddress || !dropAddress) {
       return res.status(400).json({ error: 'Please provide sender name & phone, receiver name & phone, and pickup & drop addresses.' });
     }
 
-    const parcelId = body.parcel_id || `RP-PCL-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
-    const pickupOtp = body.pickup_otp || String(Math.floor(1000 + Math.random() * 9000));
-    const deliveryOtp = body.delivery_otp || String(Math.floor(1000 + Math.random() * 9000));
+    const parcelId = `RP-PCL-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+    const pickupOtp = String(Math.floor(1000 + Math.random() * 9000));
+    const deliveryOtp = String(Math.floor(1000 + Math.random() * 9000));
 
     const parcelPayload = {
       id: parcelId,
@@ -432,7 +578,7 @@ app.post('/api/parcels', async (req, res, next) => {
 });
 
 // 5. Assign Driver to Parcel
-app.post('/api/parcels/:id/assign', async (req, res, next) => {
+app.post('/api/parcels/:id/assign', requireAdmin, async (req, res, next) => {
   try {
     const { driver_id, driver_name, driver_phone, vehicle_number, vehicle_type } = req.body;
     if (!driver_name || !driver_phone) {
@@ -455,7 +601,7 @@ app.post('/api/parcels/:id/assign', async (req, res, next) => {
 });
 
 // 6. Update Parcel Status
-app.patch('/api/parcels/:id/status', async (req, res, next) => {
+app.patch('/api/parcels/:id/status', requireAdmin, async (req, res, next) => {
   try {
     const { status, notes, updated_by } = req.body;
     const allowed = ['searching_driver', 'driver_assigned', 'reached_pickup', 'picked_up', 'in_transit', 'out_for_delivery', 'delivered', 'cancelled'];
@@ -472,7 +618,7 @@ app.patch('/api/parcels/:id/status', async (req, res, next) => {
 });
 
 // 7. Verify Pickup OTP (Driver reaches sender)
-app.post('/api/parcels/:id/verify-pickup-otp', async (req, res, next) => {
+app.post('/api/parcels/:id/verify-pickup-otp', requireAdmin, async (req, res, next) => {
   try {
     const { otp } = req.body;
     if (!otp) return res.status(400).json({ error: 'OTP is required' });
@@ -484,7 +630,7 @@ app.post('/api/parcels/:id/verify-pickup-otp', async (req, res, next) => {
 });
 
 // 8. Verify Delivery OTP (Driver reaches receiver)
-app.post('/api/parcels/:id/verify-delivery-otp', async (req, res, next) => {
+app.post('/api/parcels/:id/verify-delivery-otp', requireAdmin, async (req, res, next) => {
   try {
     const { otp } = req.body;
     if (!otp) return res.status(400).json({ error: 'OTP is required' });
@@ -498,7 +644,7 @@ app.post('/api/parcels/:id/verify-delivery-otp', async (req, res, next) => {
 /* ==========================================================================
    DRIVERS & FLEET ENDPOINTS
    ========================================================================== */
-app.get('/api/drivers', async (req, res, next) => {
+app.get('/api/drivers/public', async (req, res, next) => {
   try {
     const drivers = await db.getDrivers();
     res.json({ drivers });
@@ -507,7 +653,30 @@ app.get('/api/drivers', async (req, res, next) => {
   }
 });
 
-app.post('/api/drivers', async (req, res, next) => {
+app.get('/api/drivers', requireAdmin, async (req, res, next) => {
+  try {
+    const drivers = await db.getDrivers();
+    res.json({ drivers });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/api/drivers/lookup/:phone', async (req, res, next) => {
+  try {
+    const phoneClean = String(req.params.phone || '').replace(/\D/g, '');
+    const drivers = await db.getDrivers();
+    const driver = drivers.find(item => String(item.phone || '').replace(/\D/g, '') === phoneClean);
+    if (!driver) {
+      return res.status(404).json({ error: 'No approved driver found for this phone number.' });
+    }
+    res.json({ driver });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/drivers', requireAdmin, async (req, res, next) => {
   try {
     const { driver_name, phone, vehicle_number, vehicle_type } = req.body;
     if (!driver_name || !phone || !vehicle_number) {
@@ -533,10 +702,11 @@ app.post('/api/drivers', async (req, res, next) => {
 app.post('/api/feedback', async (req, res, next) => {
   try {
     const { booking_id, customer_name, rating, review } = req.body;
-    if (!rating) {
+    const numericRating = Number(rating);
+    if (!booking_id || !customer_name || !Number.isInteger(numericRating) || numericRating < 1 || numericRating > 5) {
       return res.status(400).json({ error: 'Rating (1-5) is required.' });
     }
-    const saved = await db.addFeedback({ booking_id, customer_name, rating: Number(rating), review });
+    const saved = await db.addFeedback({ booking_id, customer_name, rating: numericRating, review: String(review || '').slice(0, 2000) });
     res.status(201).json({ feedback: saved });
   } catch (err) {
     next(err);
@@ -558,7 +728,7 @@ app.get('/api/config', async (req, res, next) => {
 });
 
 // 2. Save / Update entire live website configuration
-app.post('/api/config', async (req, res, next) => {
+app.post('/api/config', requireAdmin, async (req, res, next) => {
   try {
     const updated = await db.saveConfig(req.body);
     res.json({ success: true, config: updated, message: 'Configuration saved and synced successfully.' });
@@ -568,7 +738,7 @@ app.post('/api/config', async (req, res, next) => {
 });
 
 // 3. Add or Update Vehicle in Fleet
-app.post('/api/admin/vehicles', async (req, res, next) => {
+app.post('/api/admin/vehicles', requireAdmin, async (req, res, next) => {
   try {
     const { vehicle_key, name, basePrice, perKmRate, icon, cap } = req.body;
     if (!vehicle_key || !name || !basePrice || !perKmRate) {
@@ -594,7 +764,7 @@ app.post('/api/admin/vehicles', async (req, res, next) => {
 });
 
 // 4. Delete Vehicle from Fleet
-app.delete('/api/admin/vehicles/:key', async (req, res, next) => {
+app.delete('/api/admin/vehicles/:key', requireAdmin, async (req, res, next) => {
   try {
     const key = req.params.key;
     const currentConfig = await db.getConfig();
@@ -612,7 +782,7 @@ app.delete('/api/admin/vehicles/:key', async (req, res, next) => {
 });
 
 // 5. Add Coupon
-app.post('/api/admin/coupons', async (req, res, next) => {
+app.post('/api/admin/coupons', requireAdmin, async (req, res, next) => {
   try {
     const { code, type, value, description } = req.body;
     if (!code || !type || value === undefined) {
@@ -640,7 +810,7 @@ app.post('/api/admin/coupons', async (req, res, next) => {
 });
 
 // 6. Delete Coupon
-app.delete('/api/admin/coupons/:code', async (req, res, next) => {
+app.delete('/api/admin/coupons/:code', requireAdmin, async (req, res, next) => {
   try {
     const code = req.params.code.toUpperCase().trim();
     const currentConfig = await db.getConfig();

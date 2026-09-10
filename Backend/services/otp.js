@@ -155,7 +155,7 @@ async function sendViaTwilio(cleanPhone, otp) {
 
 async function sendOTP(phone) {
   const cleanPhone = String(phone).replace(/\D/g, '');
-  if (cleanPhone.length < 10) {
+  if (cleanPhone.length !== 10) {
     return { success: false, error: 'Invalid phone number. Please enter 10 digits.' };
   }
 
@@ -219,7 +219,7 @@ function verifyOTP(phone, userOtp) {
   const enteredOtp = String(userOtp).trim();
 
   // Allow 123456 in dev mode
-  if (OTP_MODE === 'dev' && enteredOtp === '123456') {
+  if (OTP_MODE === 'dev' && process.env.NODE_ENV !== 'production' && enteredOtp === '123456') {
     otpStore.delete(cleanPhone);
     return { success: true, message: 'OTP verified successfully (Master Dev Code).' };
   }

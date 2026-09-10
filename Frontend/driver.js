@@ -61,7 +61,7 @@ function checkDriverAuth() {
   return false;
 }
 
-function submitDriverLogin() {
+async function submitDriverLogin() {
   const phoneInput = document.getElementById('loginDriverPhone')?.value.trim().replace(/\D/g, '');
   const pinInput = document.getElementById('loginDriverPin')?.value.trim();
   const errorEl = document.getElementById('loginErrorMsg');
@@ -81,72 +81,96 @@ function submitDriverLogin() {
     return;
   }
 
-  // Check in approved drivers registry
-  const approvedDrivers = JSON.parse(localStorage.getItem('rudraksha_approved_drivers') || '[]');
-  const riderApps = JSON.parse(localStorage.getItem('rudraksha_rider_applications') || '[]');
-  const matchedApp = riderApps.find(a => (a.phone || '').replace(/\D/g, '') === phoneInput);
+  try {
+    const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:3000/api'
+      : 'https://rudraksha-packers-movers.onrender.com/api';
 
-  let matchedDriver = approvedDrivers.find(d => (d.driver_phone || '').replace(/\D/g, '') === phoneInput);
+    const driversRes = await fetch(`${apiBase}/drivers/public`);
+    let matchedDriver = null;
+    if (driversRes.ok) {
+      const driversData = await driversRes.json();
+      const approvedDrivers = Array.isArray(driversData.drivers) ? driversData.drivers : [];
+      matchedDriver = approvedDrivers.find(d => (d.phone || '').replace(/\D/g, '') === phoneInput);
+      if (matchedDriver) {
+        localStorage.setItem('rudraksha_approved_drivers', JSON.stringify(approvedDrivers));
+      }
+    }
 
-  // Auto-sync if rider application was marked Approved in admin panel
-  if (!matchedDriver && matchedApp && matchedApp.status === 'Approved') {
-    matchedDriver = {
-      id: matchedApp.driverId || `RDR-${phoneInput.slice(-4)}`,
-      driver_name: matchedApp.name,
-      driver_phone: matchedApp.phone,
-      vehicle_number: matchedApp.vehNum,
-      vehicle_type: matchedApp.vehType,
-      pin: matchedApp.pin || '1234',
-      status: 'Active',
-      onDuty: true
-    };
-    approvedDrivers.push(matchedDriver);
-    localStorage.setItem('rudraksha_approved_drivers', JSON.stringify(approvedDrivers));
-  }
+    if (!matchedDriver) {
+      const localApprovedDrivers = JSON.parse(localStorage.getItem('rudraksha_approved_drivers') || '[]');
+      matchedDriver = localApprovedDrivers.find(d => (d.driver_phone || '').replace(/\D/g, '') === phoneInput);
+    }
 
-  // Universal Default Fleet Demo Account (Rajesh Kumar - 7296831460 / PIN: 1234)
-  if (!matchedDriver && phoneInput === '7296831460') {
-    matchedDriver = {
-      id: 'drv-101',
-      driver_name: 'Rajesh Kumar',
-      driver_phone: '7296831460',
-      vehicle_number: 'RJ-14-GA-1024',
-      vehicle_type: 'Tata Ace / Bike Courier',
-      pin: '1234',
-      status: 'Active',
-      onDuty: true
-    };
-  }
+    const riderApps = JSON.parse(localStorage.getItem('rudraksha_rider_applications') || '[]');
+    const matchedApp = riderApps.find(a => (a.phone || '').replace(/\D/g, '') === phoneInput);
 
-  // Validation
-  if (!matchedDriver) {
-    if (matchedApp && matchedApp.status === 'Pending') {
+    if (!matchedDriver) {
+      if (matchedApp && matchedApp.status === 'Pending') {
+        if (errorEl) {
+          errorEl.innerText = `⏳ Your application is currently PENDING verification by Admin. You will receive your PIN on WhatsApp once approved.`;
+          errorEl.style.display = 'block';
+        }
+        return;
+      }
       if (errorEl) {
-        errorEl.innerText = `⏳ Your application is currently PENDING verification by Admin. You will receive your PIN on WhatsApp once approved.`;
+        errorEl.innerText = `❌ No active delivery partner found for +91 ${phoneInput}. Please register as a rider partner first.`;
         errorEl.style.display = 'block';
       }
       return;
     }
+
+    const driverPhone = matchedDriver.driver_phone || matchedDriver.phone || '';
+    const driverPin = matchedDriver.pin || matchedDriver.password || '';
+    if (!driverPin || String(driverPin) !== String(pinInput)) {
+      if (errorEl) {
+        errorEl.innerText = '❌ Incorrect security PIN. Please check the PIN sent to your WhatsApp.';
+        errorEl.style.display = 'block';
+      }
+      return;
+    }
+
+    const normalizedDriver = {
+      id: matchedDriver.id || matchedDriver.driverId || `RDR-${phoneInput.slice(-4)}`,
+      driver_name: matchedDriver.driver_name || matchedDriver.name || 'Rudraksha Rider',
+      driver_phone: driverPhone,
+      vehicle_number: matchedDriver.vehicle_number || matchedDriver.vehNum || '',
+      vehicle_type: matchedDriver.vehicle_type || matchedDriver.vehType || 'Bike / Scooter',
+      pin: driverPin,
+      status: matchedDriver.status || 'Active',
+      onDuty: matchedDriver.onDuty !== false
+    };
+
+    currentDriver = normalizedDriver;
+    localStorage.setItem('rudraksha_driver_session', JSON.stringify(currentDriver));
+    localStorage.setItem('rudraksha_current_driver', JSON.stringify(currentDriver));
+    localStorage.setItem('rudraksha_approved_drivers', JSON.stringify([...(JSON.parse(localStorage.getItem('rudraksha_approved_drivers') || '[]')).filter(d => (d.driver_phone || d.phone || '').replace(/\D/g, '') !== phoneInput), normalizedDriver]));
+
+    const loginOverlay = document.getElementById('driverLoginOverlay');
+    if (loginOverlay) {
+      loginOverlay.style.transition = 'all 0.3s ease';
+      loginOverlay.style.opacity = '0';
+      setTimeout(() => {
+        loginOverlay.style.display = 'none';
+        loginOverlay.style.opacity = '1';
+      }, 300);
+    }
+
+    renderNavProfile();
+    updateDriverStatsDisplay();
+    renderDriverProfileView();
+    loadActiveTripFromStorage();
+    loadDriverFeed(true);
+
+    showToast(`🎉 Login successful! Welcome back, ${currentDriver.driver_name}!`, 'success');
+  } catch (err) {
     if (errorEl) {
-      errorEl.innerText = `❌ No active delivery partner found for +91 ${phoneInput}. Please register as a rider partner first.`;
+      errorEl.innerText = 'Unable to connect to the rider service right now. Please try again.';
       errorEl.style.display = 'block';
     }
-    return;
+    console.error(err);
   }
-
-  // Verify PIN (accept correct PIN or master fallback 1234)
-  if (matchedDriver.pin && matchedDriver.pin !== pinInput && pinInput !== '1234') {
-    if (errorEl) {
-      errorEl.innerText = '❌ Incorrect security PIN. Please check the PIN sent to your WhatsApp.';
-      errorEl.style.display = 'block';
-    }
-    return;
-  }
-
-  // Login successful
-  currentDriver = matchedDriver;
-  localStorage.setItem('rudraksha_driver_session', JSON.stringify(currentDriver));
-  localStorage.setItem('rudraksha_current_driver', JSON.stringify(currentDriver));
+}
 
   // Hide login overlay with animation
   const loginOverlay = document.getElementById('driverLoginOverlay');
@@ -792,7 +816,7 @@ function submitOtpVerification() {
     : (target.delivery_otp || '7890');
 
   // Accept correct OTP or universal testing bypass
-  if (otp !== expectedOtp && otp !== '1234') {
+  if (otp !== expectedOtp) {
     showToast(`❌ Wrong OTP (${otp}). Ask customer for correct code.`, 'error');
     // Shake input
     const wrap = document.querySelector('.otp-input-wrap');

@@ -1009,7 +1009,7 @@
       modal.show();
     }
 
-    function handleRiderRegistrationSubmit(e) {
+    async function handleRiderRegistrationSubmit(e) {
       e.preventDefault();
 
       const name = document.getElementById('riderFullName')?.value.trim();
@@ -1025,37 +1025,56 @@
         return;
       }
 
-      // Save directly into Admin Panel verification queue (Status: Pending)
       try {
-        const existing = JSON.parse(localStorage.getItem('rudraksha_rider_applications') || '[]');
-        // Check if already registered
-        const already = existing.find(a => a.phone === phone);
-        if (already) {
-          alert(`Application with phone number +91 ${phone} is already submitted (${already.status}). Our team will send your credentials via WhatsApp.`);
-          bootstrap.Modal.getInstance(document.getElementById('riderRegistrationModal'))?.hide();
-          return;
+        const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'http://localhost:3000/api'
+          : 'https://rudraksha-packers-movers.onrender.com/api';
+
+        const response = await fetch(`${apiBase}/rider-applications`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            phone,
+            city,
+            shift,
+            vehType,
+            vehNum,
+            dlNum
+          })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to submit rider application.');
         }
 
-        existing.unshift({
-          id: `app-${Date.now()}`,
-          name,
-          phone,
-          city,
-          shift,
-          vehType,
-          vehNum,
-          dlNum,
-          status: 'Pending',
-          date: new Date().toISOString()
-        });
-        localStorage.setItem('rudraksha_rider_applications', JSON.stringify(existing));
-      } catch (err) { }
+        const saved = data.application || { name, phone, city, status: 'Pending' };
+        try {
+          const existing = JSON.parse(localStorage.getItem('rudraksha_rider_applications') || '[]');
+          const duplicate = existing.find(a => String(a.phone || '').replace(/\D/g, '') === String(phone).replace(/\D/g, ''));
+          if (!duplicate) {
+            existing.unshift({
+              ...saved,
+              name,
+              phone,
+              city,
+              shift,
+              vehType,
+              vehNum,
+              dlNum,
+              status: 'Pending',
+              date: new Date().toISOString()
+            });
+            localStorage.setItem('rudraksha_rider_applications', JSON.stringify(existing));
+          }
+        } catch (err) {
+          console.warn('Local rider cache sync failed:', err);
+        }
 
-      // Hide modal
-      bootstrap.Modal.getInstance(document.getElementById('riderRegistrationModal'))?.hide();
+        bootstrap.Modal.getInstance(document.getElementById('riderRegistrationModal'))?.hide();
 
-      // Show celebratory confirmation dialogue
-      alert(
+        alert(
 `🎉 PARTNER APPLICATION SUBMITTED!
 
 Namaste ${name},
@@ -1064,7 +1083,10 @@ Aapki rider partner application Rudraksha Admin Panel me bhej di gayi hai.
 Hamari verification team aapke driving license aur vehicle details check karke 15-30 minutes me aapke WhatsApp number (+91 ${phone}) par Login ID aur Password bhej degi.
 
 Dhanyawaad!`
-      );
+        );
+      } catch (err) {
+        alert(err.message || 'Unable to submit registration right now. Please try again.');
+      }
     }
   </script>
 

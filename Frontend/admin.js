@@ -2,7 +2,6 @@ const isLocalhost = window.location.hostname === 'localhost' || window.location.
 const PRODUCTION_API_URL = 'https://rudraksha-packers-movers.onrender.com/api';
 const API_BASE = isLocalhost ? 'http://localhost:3000/api' : (localStorage.getItem('rudraksha_backend_api_url') || PRODUCTION_API_URL);
 const AUTH_TOKEN_KEY = 'rudraksha_admin_auth_token';
-const DEFAULT_MASTER_PASS = 'rudraksha@admin2026';
 
 let adminBookings = [];
 let adminDrivers = [];
@@ -208,13 +207,7 @@ async function submitAdminLogin() {
         throw new Error(data.error || 'Invalid credentials');
       }
     } catch (apiErr) {
-      const validLocalPasses = [DEFAULT_MASTER_PASS, 'admin123', '1234', '7296831460'];
-      if (validLocalPasses.includes(password)) {
-        token = `local_admin_session_${Date.now()}`;
-        authSuccess = true;
-      } else {
-        throw new Error('Incorrect password. Use master key: rudraksha@admin2026 or admin123');
-      }
+      throw new Error('Admin service is unavailable. Start the backend and try again.');
     }
 
     if (authSuccess && token) {
@@ -1363,7 +1356,21 @@ function switchParcelSubtab(subtabName, btnEl) {
   }
 }
 
-function loadRiderApplications() {
+async function loadRiderApplications() {
+  try {
+    const token = getAuthToken();
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(`${API_BASE}/rider-applications`, { headers });
+    if (res.ok) {
+      const data = await res.json();
+      allRiderApplications = Array.isArray(data.applications) ? data.applications : [];
+      localStorage.setItem('rudraksha_rider_applications', JSON.stringify(allRiderApplications));
+      return;
+    }
+  } catch (err) {
+    console.warn('Backend rider list unavailable, falling back to local cache.', err);
+  }
+
   const saved = localStorage.getItem('rudraksha_rider_applications');
   if (saved) {
     allRiderApplications = JSON.parse(saved);
@@ -1597,85 +1604,88 @@ function renderRiderApplicationsTable(filter = currentRiderFilter) {
   }).join('');
 }
 
-function approveRiderPartner(idx) {
+async function approveRiderPartner(idx) {
   if (!allRiderApplications[idx]) return;
   const app = allRiderApplications[idx];
 
-  // Generate unique Driver ID and 4-digit PIN
-  const driverId = app.driverId || `RDR-${app.phone.slice(-4)}`;
-  const driverPin = app.pin || String(Math.floor(1000 + Math.random() * 9000));
-  app.driverId = driverId;
-  app.pin = driverPin;
-  app.status = 'Approved';
-  app.approved_at = new Date().toISOString();
+  try {
+    const driverId = app.driverId || `RDR-${String(app.phone).slice(-4)}`;
+    const driverPin = app.pin || String(Math.floor(1000 + Math.random() * 9000));
 
-  // 1. Save to applications
-  localStorage.setItem('rudraksha_rider_applications', JSON.stringify(allRiderApplications));
+    const res = await fetch(`${API_BASE}/rider-applications/${app.id}/approve`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ pin: driverPin })
+    });
 
-  // 2. Save into approved drivers authentication registry
-  const approvedDrivers = JSON.parse(localStorage.getItem('rudraksha_approved_drivers') || '[]');
-  const existingIdx = approvedDrivers.findIndex(d => d.driver_phone === app.phone);
-  const driverObj = {
-    id: driverId,
-    driver_name: app.name,
-    driver_phone: app.phone,
-    vehicle_number: app.vehNum,
-    vehicle_type: app.vehType,
-    pin: driverPin,
-    status: 'Active',
-    onDuty: true,
-    approved_at: new Date().toISOString()
-  };
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Approval failed.');
 
-  if (existingIdx >= 0) {
-    approvedDrivers[existingIdx] = driverObj;
-  } else {
-    approvedDrivers.push(driverObj);
+    app.driverId = data.driver?.id || driverId;
+    app.pin = data.driver?.pin || driverPin;
+    app.status = 'Approved';
+    app.approved_at = new Date().toISOString();
+
+    const approvedDrivers = JSON.parse(localStorage.getItem('rudraksha_approved_drivers') || '[]');
+    const existingIdx = approvedDrivers.findIndex(d => (d.driver_phone || '').replace(/\D/g, '') === String(app.phone || '').replace(/\D/g, ''));
+    const driverObj = {
+      id: app.driverId,
+      driver_name: app.name,
+      driver_phone: app.phone,
+      vehicle_number: app.vehNum,
+      vehicle_type: app.vehType,
+      pin: app.pin,
+      status: 'Active',
+      onDuty: true,
+      approved_at: app.approved_at
+    };
+
+    if (existingIdx >= 0) approvedDrivers[existingIdx] = driverObj;
+    else approvedDrivers.push(driverObj);
+    localStorage.setItem('rudraksha_approved_drivers', JSON.stringify(approvedDrivers));
+    localStorage.setItem('rudraksha_rider_applications', JSON.stringify(allRiderApplications));
+
+    const portalUrl = `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, '')}driver.html`;
+    const waMsg = `🎉 *CONGRATULATIONS! RUDRAKSHA DELIVERY PARTNER APPROVED*\n━━━━━━━━━━━━━━━━━━━━\nNamaste *${app.name}*,\nAapka Rudraksha Express Delivery Partner account approve aur activate ho gaya hai!\n\n📲 *Aapke Login Credentials:*\n• Login Mobile Number: *${app.phone}*\n• Security PIN / Password: *${app.pin}*\n• Driver Partner ID: *${app.driverId}*\n• Registered Vehicle: *${app.vehType} (${app.vehNum})*\n\n👉 *Tap to Login to Your Driver Dashboard:*\n${portalUrl}\n━━━━━━━━━━━━━━━━━━━━\n_Login karke apni duty 'ON' karein aur city delivery orders accept karna shuru karein. Welcome to the fleet!_`;
+    const waUrl = `https://wa.me/91${app.phone}?text=${encodeURIComponent(waMsg)}`;
+    window.open(waUrl, '_blank');
+
+    showAdminToast(`🎉 Driver "${app.name}" approved! WhatsApp credentials dispatched.`, 'success');
+    await loadRiderApplications();
+    renderRiderApplicationsTable();
+    updateParcelMetrics();
+  } catch (err) {
+    showAdminToast(err.message || 'Approval failed. Please try again.', 'error');
   }
-  localStorage.setItem('rudraksha_approved_drivers', JSON.stringify(approvedDrivers));
-
-  // 3. Format WhatsApp Credentials Message to Driver
-  const portalUrl = `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, '')}driver.html`;
-  const waMsg = 
-`🎉 *CONGRATULATIONS! RUDRAKSHA DELIVERY PARTNER APPROVED*
-━━━━━━━━━━━━━━━━━━━━
-Namaste *${app.name}*,
-Aapka Rudraksha Express Delivery Partner account approve aur activate ho gaya hai!
-
-📲 *Aapke Login Credentials:*
-• Login Mobile Number: *${app.phone}*
-• Security PIN / Password: *${driverPin}*
-• Driver Partner ID: *${driverId}*
-• Registered Vehicle: *${app.vehType} (${app.vehNum})*
-
-👉 *Tap to Login to Your Driver Dashboard:*
-${portalUrl}
-━━━━━━━━━━━━━━━━━━━━
-_Login karke apni duty 'ON' karein aur city delivery orders accept karna shuru karein. Welcome to the fleet!_`;
-
-  const waUrl = `https://wa.me/91${app.phone}?text=${encodeURIComponent(waMsg)}`;
-  window.open(waUrl, '_blank');
-
-  showAdminToast(`🎉 Driver "${app.name}" approved! WhatsApp credentials dispatched.`, 'success');
-  renderRiderApplicationsTable();
-  updateParcelMetrics();
 }
 
-function rejectRiderPartner(idx) {
+async function rejectRiderPartner(idx) {
   if (!allRiderApplications[idx]) return;
   const app = allRiderApplications[idx];
 
-  app.status = 'Rejected';
-  localStorage.setItem('rudraksha_rider_applications', JSON.stringify(allRiderApplications));
+  try {
+    const res = await fetch(`${API_BASE}/rider-applications/${app.id}/reject`, {
+      method: 'POST',
+      headers: getAuthHeaders()
+    });
 
-  // Remove from approved drivers registry
-  const approvedDrivers = JSON.parse(localStorage.getItem('rudraksha_approved_drivers') || '[]');
-  const filtered = approvedDrivers.filter(d => d.driver_phone !== app.phone);
-  localStorage.setItem('rudraksha_approved_drivers', JSON.stringify(filtered));
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Rejection failed.');
 
-  showAdminToast(`Rider application for "${app.name}" marked as Rejected.`, 'info');
-  renderRiderApplicationsTable();
-  updateParcelMetrics();
+    app.status = 'Rejected';
+    localStorage.setItem('rudraksha_rider_applications', JSON.stringify(allRiderApplications));
+
+    const approvedDrivers = JSON.parse(localStorage.getItem('rudraksha_approved_drivers') || '[]');
+    const filtered = approvedDrivers.filter(d => (d.driver_phone || '').replace(/\D/g, '') !== String(app.phone || '').replace(/\D/g, ''));
+    localStorage.setItem('rudraksha_approved_drivers', JSON.stringify(filtered));
+
+    showAdminToast(`Rider application for "${app.name}" marked as Rejected.`, 'info');
+    await loadRiderApplications();
+    renderRiderApplicationsTable();
+    updateParcelMetrics();
+  } catch (err) {
+    showAdminToast(err.message || 'Unable to reject the rider application.', 'error');
+  }
 }
 
 function updateParcelMetrics() {

@@ -3,7 +3,7 @@ const fs = require('fs/promises');
 const path = require('path');
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 let supabase = null;
 if (supabaseUrl && supabaseKey) {
@@ -17,6 +17,7 @@ const dataDir = path.join(__dirname, '..', 'data');
 const bookingsFile = path.join(dataDir, 'bookings.json');
 const parcelsFile = path.join(dataDir, 'parcels.json');
 const driversFile = path.join(dataDir, 'drivers.json');
+const riderApplicationsFile = path.join(dataDir, 'rider_applications.json');
 const feedbackFile = path.join(dataDir, 'feedback.json');
 const configFile = path.join(dataDir, 'config.json');
 
@@ -43,6 +44,25 @@ const defaultDrivers = [
   { id: 'drv-101', driver_name: 'Rajesh Kumar', phone: '9876543210', vehicle_number: 'RJ-14-GA-1024', vehicle_type: 'Tata Ace (1.5 Ton)', status: 'available', rating: 4.9 },
   { id: 'drv-102', driver_name: 'Vikram Singh', phone: '9829012345', vehicle_number: 'RJ-14-GB-5521', vehicle_type: 'Eicher 14ft (3.5 Ton)', status: 'available', rating: 4.8 },
   { id: 'drv-103', driver_name: 'Ramesh Meena', phone: '9414098765', vehicle_number: 'RJ-14-GC-8840', vehicle_type: '19ft Container (7 Ton)', status: 'available', rating: 4.7 }
+];
+
+const defaultRiderApplications = [
+  {
+    id: 'app-demo-001',
+    name: 'Mukesh Kumar Sharma',
+    phone: '9829012345',
+    city: 'Jaipur (Mansarovar / Vaishali)',
+    shift: 'Full Time (8-10 Hours)',
+    vehType: 'Bike / Scooter',
+    vehNum: 'RJ14 AB 1234',
+    dlNum: 'RJ14 20210012345',
+    status: 'Approved',
+    driverId: 'RDR-2345',
+    pin: '4321',
+    date: new Date(Date.now() - 2 * 86400000).toISOString(),
+    created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
+    approved_at: new Date(Date.now() - 86400000).toISOString()
+  }
 ];
 
 const defaultConfig = {
@@ -126,9 +146,13 @@ module.exports = {
   // BOOKINGS
   async getBookings() {
     if (supabase) {
-      const { data, error } = await supabase.from('bookings').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase.from('bookings').select('*').order('created_at', { ascending: false });
+        if (!error && data) return data;
+        console.warn('Supabase bookings read fallback to local:', error?.message || 'empty response');
+      } catch (err) {
+        console.warn('Supabase bookings read fallback to local:', err.message);
+      }
     }
     return await readLocal(bookingsFile, []);
   },
@@ -136,14 +160,18 @@ module.exports = {
   async getBookingByIdOrPhone(identifier) {
     const cleanId = String(identifier).trim();
     if (supabase) {
-      const { data, error } = await supabase
-        .from('bookings')
-        .select('*, drivers(*)')
-        .or(`id.ilike.%${cleanId}%,customer_phone.eq.${cleanId}`)
-        .order('created_at', { ascending: false })
-        .limit(1);
-      if (error) throw error;
-      return data && data.length > 0 ? data[0] : null;
+      try {
+        const { data, error } = await supabase
+          .from('bookings')
+          .select('*, drivers(*)')
+          .or(`id.eq.${cleanId},customer_phone.eq.${cleanId}`)
+          .order('created_at', { ascending: false })
+          .limit(1);
+        if (!error && data && data.length > 0) return data[0];
+        if (error) console.warn('Supabase booking lookup fallback to local:', error.message);
+      } catch (err) {
+        console.warn('Supabase booking lookup fallback to local:', err.message);
+      }
     }
 
     const bookings = await readLocal(bookingsFile, []);
@@ -156,9 +184,13 @@ module.exports = {
 
   async createBooking(bookingData) {
     if (supabase) {
-      const { data, error } = await supabase.from('bookings').insert([bookingData]).select().single();
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase.from('bookings').insert([bookingData]).select().single();
+        if (!error && data) return data;
+        console.warn('Supabase booking insert fallback to local:', error?.message || 'empty response');
+      } catch (err) {
+        console.warn('Supabase booking insert fallback to local:', err.message);
+      }
     }
 
     const bookings = await readLocal(bookingsFile, []);
@@ -219,6 +251,54 @@ module.exports = {
   },
 
   // DRIVERS
+  async getRiderApplications() {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.from('rider_applications').select('*').order('created_at', { ascending: false });
+        if (!error && data) return data;
+        console.warn('Supabase rider applications read fallback to local:', error?.message || 'empty response');
+      } catch (err) {
+        console.warn('Supabase rider applications read fallback to local:', err.message);
+      }
+    }
+    return await readLocal(riderApplicationsFile, defaultRiderApplications);
+  },
+
+  async createRiderApplication(payload) {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.from('rider_applications').insert([payload]).select().single();
+        if (!error && data) return data;
+        console.warn('Supabase rider application insert fallback to local:', error?.message || 'empty response');
+      } catch (err) {
+        console.warn('Supabase rider application insert fallback to local:', err.message);
+      }
+    }
+    const apps = await readLocal(riderApplicationsFile, defaultRiderApplications);
+    const newApp = { id: payload.id || `app-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, ...payload, created_at: new Date().toISOString() };
+    apps.unshift(newApp);
+    await writeLocal(riderApplicationsFile, apps);
+    return newApp;
+  },
+
+  async updateRiderApplication(id, updates) {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.from('rider_applications').update(updates).eq('id', id).select().single();
+        if (!error && data) return data;
+        console.warn('Supabase rider application update fallback to local:', error?.message || 'empty response');
+      } catch (err) {
+        console.warn('Supabase rider application update fallback to local:', err.message);
+      }
+    }
+    const apps = await readLocal(riderApplicationsFile, defaultRiderApplications);
+    const index = apps.findIndex(app => app.id === id);
+    if (index === -1) return null;
+    apps[index] = { ...apps[index], ...updates, updated_at: new Date().toISOString() };
+    await writeLocal(riderApplicationsFile, apps);
+    return apps[index];
+  },
+
   async getDrivers() {
     if (supabase) {
       const { data, error } = await supabase.from('drivers').select('*').order('created_at', { ascending: false });
@@ -389,17 +469,38 @@ module.exports = {
 
     const cleanEntered = String(enteredOtp).trim();
     if (otpType === 'pickup') {
-      if (String(parcel.pickup_otp) !== cleanEntered && cleanEntered !== '1234') {
+      if (parcel.pickup_otp_verified) throw new Error('Pickup OTP has already been verified.');
+      if (String(parcel.pickup_otp) !== cleanEntered) {
         throw new Error('Invalid Pickup OTP. Please check with the sender.');
       }
-      return await this.updateParcelStatus(id, 'picked_up', 'driver', 'Pickup OTP verified successfully');
+      const updated = await this.updateParcelStatus(id, 'picked_up', 'driver', 'Pickup OTP verified successfully');
+      return this.markParcelOtpVerified(updated, 'pickup');
     } else if (otpType === 'delivery') {
-      if (String(parcel.delivery_otp) !== cleanEntered && cleanEntered !== '1234') {
+      if (!parcel.pickup_otp_verified) throw new Error('Pickup OTP must be verified first.');
+      if (parcel.delivery_otp_verified) throw new Error('Delivery OTP has already been verified.');
+      if (String(parcel.delivery_otp) !== cleanEntered) {
         throw new Error('Invalid Delivery OTP. Please check with the receiver.');
       }
-      return await this.updateParcelStatus(id, 'delivered', 'driver', 'Delivery OTP verified successfully');
+      const updated = await this.updateParcelStatus(id, 'delivered', 'driver', 'Delivery OTP verified successfully');
+      return this.markParcelOtpVerified(updated, 'delivery');
     }
     throw new Error('Invalid OTP type');
+  },
+
+  async markParcelOtpVerified(parcel, otpType) {
+    const field = otpType === 'pickup' ? 'pickup_otp_verified' : 'delivery_otp_verified';
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.from('parcel_bookings').update({ [field]: true }).or(`parcel_id.eq.${parcel.parcel_id},id.eq.${parcel.id}`).select().single();
+        if (!error && data) return data;
+      } catch {}
+    }
+    const parcels = await readLocal(parcelsFile, []);
+    const index = parcels.findIndex(p => p.parcel_id === parcel.parcel_id || p.id === parcel.id);
+    if (index === -1) return parcel;
+    parcels[index] = { ...parcels[index], [field]: true, updated_at: new Date().toISOString() };
+    await writeLocal(parcelsFile, parcels);
+    return parcels[index];
   },
 
   // CONFIGURATION & FULL CONTROL

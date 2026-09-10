@@ -98,7 +98,65 @@ CREATE TABLE IF NOT EXISTS public.system_settings (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 6. CUSTOMER FEEDBACK & REVIEWS
+-- 6. APPLICATION CONFIGURATION USED BY THE API
+CREATE TABLE IF NOT EXISTS public.system_config (
+    id INTEGER PRIMARY KEY,
+    config JSONB NOT NULL DEFAULT '{}'::jsonb,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 7. PARCEL DELIVERY ORDERS
+CREATE TABLE IF NOT EXISTS public.parcel_bookings (
+    id VARCHAR(30) PRIMARY KEY,
+    parcel_id VARCHAR(30) UNIQUE NOT NULL,
+    sender_name VARCHAR(120) NOT NULL,
+    sender_phone VARCHAR(15) NOT NULL,
+    receiver_name VARCHAR(120) NOT NULL,
+    receiver_phone VARCHAR(15) NOT NULL,
+    pickup_address TEXT NOT NULL,
+    pickup_lat NUMERIC(10, 7),
+    pickup_lng NUMERIC(10, 7),
+    drop_address TEXT NOT NULL,
+    drop_lat NUMERIC(10, 7),
+    drop_lng NUMERIC(10, 7),
+    distance_km NUMERIC(8, 2) DEFAULT 0,
+    estimated_time VARCHAR(50),
+    parcel_type VARCHAR(80),
+    weight_category VARCHAR(50),
+    package_size VARCHAR(50),
+    dimensions JSONB DEFAULT '{}'::jsonb,
+    vehicle_type VARCHAR(50),
+    base_fare NUMERIC(10, 2) DEFAULT 0,
+    distance_fare NUMERIC(10, 2) DEFAULT 0,
+    weight_fare NUMERIC(10, 2) DEFAULT 0,
+    vehicle_fare NUMERIC(10, 2) DEFAULT 0,
+    handling_fee NUMERIC(10, 2) DEFAULT 0,
+    addons_fee NUMERIC(10, 2) DEFAULT 0,
+    addons JSONB DEFAULT '[]'::jsonb,
+    discount NUMERIC(10, 2) DEFAULT 0,
+    tax NUMERIC(10, 2) DEFAULT 0,
+    total_amount NUMERIC(10, 2) NOT NULL,
+    payment_method VARCHAR(40) DEFAULT 'pay_at_pickup',
+    payment_status VARCHAR(20) DEFAULT 'pending',
+    booking_status VARCHAR(30) DEFAULT 'searching_driver',
+    status VARCHAR(30) DEFAULT 'searching_driver',
+    driver_id VARCHAR(80),
+    assigned_driver_name VARCHAR(120),
+    assigned_driver_phone VARCHAR(15),
+    assigned_vehicle_no VARCHAR(30),
+    assigned_vehicle_type VARCHAR(50),
+    pickup_otp VARCHAR(6) NOT NULL,
+    pickup_otp_verified BOOLEAN DEFAULT FALSE,
+    delivery_otp VARCHAR(6) NOT NULL,
+    delivery_otp_verified BOOLEAN DEFAULT FALSE,
+    pickup_time TIMESTAMPTZ,
+    delivery_time TIMESTAMPTZ,
+    notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 8. CUSTOMER FEEDBACK & REVIEWS
 CREATE TABLE IF NOT EXISTS public.feedback (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     booking_id VARCHAR(20) REFERENCES public.bookings(id) ON DELETE CASCADE,
@@ -108,7 +166,7 @@ CREATE TABLE IF NOT EXISTS public.feedback (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 7. INITIAL SAMPLE DATA SEEDING
+-- 9. INITIAL SAMPLE DATA SEEDING
 INSERT INTO public.coupons (code, discount_type, value, min_amount, is_active)
 VALUES 
     ('RUDRAKSHA10', 'percent', 10, 3000, true),
@@ -123,11 +181,12 @@ VALUES
     ('Ramesh Meena', '9414098765', 'RJ-14-GC-8840', '19ft Container (7 Ton)', 'available', 4.7)
 ON CONFLICT (phone) DO NOTHING;
 
--- 8. ROW LEVEL SECURITY (RLS) POLICIES
+-- 10. ROW LEVEL SECURITY (RLS) POLICIES
 ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.drivers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.coupons ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.feedback ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.parcel_bookings ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies if re-running
 DROP POLICY IF EXISTS "Allow public insert to bookings" ON public.bookings;
@@ -138,12 +197,10 @@ DROP POLICY IF EXISTS "Allow full access for coupons" ON public.coupons;
 DROP POLICY IF EXISTS "Allow public feedback insert" ON public.feedback;
 DROP POLICY IF EXISTS "Allow public feedback read" ON public.feedback;
 DROP POLICY IF EXISTS "Allow full access for feedback" ON public.feedback;
+DROP POLICY IF EXISTS "Allow full access for parcel bookings" ON public.parcel_bookings;
 DROP POLICY IF EXISTS "Allow public read drivers" ON public.drivers;
 DROP POLICY IF EXISTS "Allow full access for drivers" ON public.drivers;
 
--- Enable Full Access for Application & Admin API
-CREATE POLICY "Allow full access for bookings" ON public.bookings USING (true) WITH CHECK (true);
-CREATE POLICY "Allow full access for drivers" ON public.drivers USING (true) WITH CHECK (true);
-CREATE POLICY "Allow full access for coupons" ON public.coupons USING (true) WITH CHECK (true);
-CREATE POLICY "Allow full access for feedback" ON public.feedback USING (true) WITH CHECK (true);
+-- No public policies are created. The backend uses SUPABASE_SERVICE_ROLE_KEY
+-- and the browser must never connect directly to these operational tables.
 

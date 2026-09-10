@@ -195,9 +195,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const shiftingDateInput = document.getElementById('shiftingDate');
   if (shiftingDateInput) shiftingDateInput.value = dateStr;
 
-  // Fetch settings from Backend API / LocalStorage
-  await loadBackendData();
-
   // Initialize Leaflet Map
   initRouteMap();
 
@@ -758,13 +755,17 @@ function initFirebaseVerifier() {
 }
 
 async function requestPhoneOTP() {
-  const phoneInput = document.getElementById('custPhone');
-  const phone = phoneInput?.value.replace(/\D/g, '');
+  const phoneInput = document.getElementById('custPhone') || document.getElementById('otpPhoneInput');
+  const phone = (phoneInput?.value || '').replace(/\D/g, '');
 
   if (!phone || phone.length < 10) {
     alert('Please enter a valid 10-digit WhatsApp mobile number first.');
     if (phoneInput) phoneInput.focus();
     return;
+  }
+
+  if (phoneInput && phoneInput.id === 'otpPhoneInput' && document.getElementById('custPhone')) {
+    document.getElementById('custPhone').value = phone;
   }
 
   const btnSend = document.getElementById('btnSendOtp');
@@ -810,21 +811,32 @@ async function requestPhoneOTP() {
       }
     }
 
-    // 2. Server / Dev Mode Fallback
+    // 2. Server OTP fallback
+    const otpResponse = await fetch(`${BOOKING_API_URL}/otp/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone })
+    });
+    const otpData = await otpResponse.json().catch(() => ({}));
+    if (!otpResponse.ok || !otpData.success) {
+      throw new Error(otpData.error || 'OTP service is unavailable.');
+    }
+
     const otpSection = document.getElementById('otpVerificationSection');
     if (otpSection) otpSection.style.display = 'block';
     
     document.getElementById('otpTargetPhone').innerText = `+91 ${phone}`;
     const statusMsg = document.getElementById('otpStatusMsg');
     if (statusMsg) {
-      statusMsg.innerHTML = `<span class="text-info"><i class="fa-solid fa-circle-info me-1"></i> <strong>Dev Mode:</strong> Use code <strong>123456</strong>. <a href="javascript:void(0)" onclick="autoFillDevOtp('123456')" class="fw-bold text-decoration-underline ms-1">Auto-fill 123456</a></span>`;
+      const devHint = otpData.devOtp ? ` Test code: <strong>${otpData.devOtp}</strong>` : '';
+      statusMsg.innerHTML = `<span class="text-info"><i class="fa-solid fa-circle-info me-1"></i> ${otpData.message || 'OTP sent successfully.'}${devHint}</span>`;
     }
 
     startOtpTimer(30);
     document.getElementById('otp1')?.focus();
   } catch (err) {
     console.error('OTP request error:', err);
-    alert(`Could not send OTP: ${err.message}\n\nTip: You can also verify instantly with test code 123456.`);
+    alert(`Could not send OTP: ${err.message}`);
   } finally {
     if (btnSend) {
       btnSend.disabled = false;
@@ -888,6 +900,14 @@ async function verifyEnteredOTP() {
   const statusMsg = document.getElementById('otpStatusMsg');
   if (statusMsg) statusMsg.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Verifying OTP...';
 
+  if (!phone) {
+    const fallbackPhoneInput = document.getElementById('custPhone') || document.getElementById('otpPhoneInput');
+    if (fallbackPhoneInput) {
+      fallbackPhoneInput.focus();
+    }
+    throw new Error('Phone number is missing.');
+  }
+
   try {
     if (firebaseConfirmationResult) {
       // 1. Verify with Google Firebase
@@ -910,12 +930,21 @@ async function verifyEnteredOTP() {
     verifiedPhoneNumber = phone;
 
     // Hide OTP box, show Verified Badge
-    document.getElementById('otpVerificationSection').style.display = 'none';
+    const otpSection = document.getElementById('otpVerificationSection');
+    if (otpSection) otpSection.style.display = 'none';
+
     const badge = document.getElementById('phoneVerifiedBadge');
     if (badge) {
       badge.style.display = 'block';
-      document.getElementById('verifiedPhoneText').innerText = phone;
+      const verifiedTextEl = document.getElementById('verifiedPhoneText');
+      if (verifiedTextEl) verifiedTextEl.textContent = phone;
+      else badge.setAttribute('title', phone);
     }
+
+    const mainPhoneInput = document.getElementById('custPhone');
+    if (mainPhoneInput) mainPhoneInput.value = phone;
+    const otpPhoneInput = document.getElementById('otpPhoneInput');
+    if (otpPhoneInput) otpPhoneInput.value = phone;
 
     alert('✅ Mobile number verified successfully!');
   } catch (err) {
@@ -1188,10 +1217,10 @@ function calculatePrice() {
   recalculateTotal();
 }
 
-function toggleAddon(addonKey) {
+function toggleAddon(addonKey, sourceEvent) {
   const checkbox = document.getElementById(`addon_${addonKey}`) || document.getElementById(`addon${addonKey.charAt(0).toUpperCase() + addonKey.slice(1)}`);
   if (checkbox) {
-    if (event.target !== checkbox) checkbox.checked = !checkbox.checked;
+    if (!sourceEvent || sourceEvent.target !== checkbox) checkbox.checked = !checkbox.checked;
     recalculateTotal();
   }
 }
@@ -1381,6 +1410,11 @@ async function processWhatsAppCheckout(openWhatsApp = true) {
     return;
   }
 
+  if (!isPhoneVerified || verifiedPhoneNumber !== cleanPhone) {
+    alert('Please verify this mobile number with OTP before placing the booking.');
+    return;
+  }
+
   const pickup = document.getElementById('pickupCity')?.value.trim();
   const drop = document.getElementById('dropCity')?.value.trim();
   const dist = parseFloat(document.getElementById('distanceKm')?.value || 0);
@@ -1451,16 +1485,31 @@ async function processWhatsAppCheckout(openWhatsApp = true) {
       body: JSON.stringify(bookingPayload)
     });
 
-    if (apiRes.ok) {
-      const data = await apiRes.json();
-      createdBooking = data.booking;
-    }
+    const data = await apiRes.json().catch(() => ({}));
+    if (!apiRes.ok || !data.booking) throw new Error(data.error || 'Booking could not be saved.');
+    createdBooking = data.booking;
   } catch (err) {
-    console.warn('Backend API offline, using local fallback:', err);
+    alert(`Booking failed: ${err.message}`);
+    return;
   }
 
-  const finalBookingId = createdBooking?.id || `RB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-  const finalBookingData = createdBooking || { ...bookingPayload, id: finalBookingId };
+  const finalBookingId = createdBooking.id;
+  const finalBookingData = createdBooking;
+  const trackUrl = (() => {
+    try {
+      const baseUrl = new URL('track.html', window.location.href);
+      baseUrl.searchParams.set('id', finalBookingId);
+      return baseUrl.toString();
+    } catch {
+      return `track.html?id=${encodeURIComponent(finalBookingId)}`;
+    }
+  })();
+
+  try {
+    const history = JSON.parse(localStorage.getItem('rudraksha_bookings_history') || '[]');
+    history.unshift(finalBookingData);
+    localStorage.setItem('rudraksha_bookings_history', JSON.stringify(history.slice(0, 50)));
+  } catch {}
 
   if (openWhatsApp) {
     // Structured Professional WhatsApp Message
@@ -1495,7 +1544,15 @@ function showBookingSuccessModal(bookingId, bookingData) {
   document.getElementById('successBookingId').innerText = bookingId;
 
   // 1. WhatsApp Confirmation Link
-  const trackUrl = `${window.location.origin}/Frontend/track.html?id=${bookingId}`;
+  const trackUrl = (() => {
+    try {
+      const baseUrl = new URL('track.html', window.location.href);
+      baseUrl.searchParams.set('id', bookingId);
+      return baseUrl.toString();
+    } catch {
+      return `track.html?id=${encodeURIComponent(bookingId)}`;
+    }
+  })();
   const waMsg = `📦 *RUDRAKSHA PACKERS & MOVERS - BOOKING CONFIRMED* 🚚\n\n` +
     `Dear *${bookingData.customer_name || 'Customer'}*,\n` +
     `Your relocation booking *${bookingId}* is successfully registered!\n\n` +
@@ -1538,46 +1595,41 @@ function openTrackingModal(prefillId = '') {
   const modal = new bootstrap.Modal(document.getElementById('trackingModal'));
   modal.show();
 
-  if (prefillId) {
-    document.getElementById('trackBookingIdInput').value = prefillId;
-    trackBookingStatus();
+  const input = document.getElementById('trackSearchInput') || document.getElementById('trackBookingIdInput');
+  if (input && prefillId) {
+    input.value = prefillId;
+    searchBookingTracking();
   }
+}
+
+function searchBookingTracking() {
+  const input = document.getElementById('trackSearchInput') || document.getElementById('trackBookingIdInput');
+  const query = input?.value.trim();
+  if (!query) {
+    const error = document.getElementById('trackSearchError');
+    if (error) {
+      error.textContent = 'Please enter a booking ID or mobile number.';
+      error.style.display = 'block';
+    }
+    return;
+  }
+  fetchBookingAndTrack(query);
 }
 
 async function trackBookingStatus() {
-  const input = document.getElementById('trackBookingIdInput');
-  const bookingId = input.value.trim().toUpperCase();
-  const resultDiv = document.getElementById('trackingResult');
-
-  if (!bookingId) {
-    alert('Please enter your Booking ID (e.g. RB-XXXXXX)');
-    return;
-  }
-
-  resultDiv.style.display = 'block';
-  resultDiv.innerHTML = '<div class="text-center py-4"><i class="fa-solid fa-spinner fa-spin fa-2x text-primary-custom"></i><div class="mt-2 small text-muted">Retrieving relocation status...</div></div>';
-
-  try {
-    const res = await fetch(`${BOOKING_API_URL}/bookings/track/${bookingId}`);
-    const data = await res.json();
-
-    if (!res.ok || !data.booking) {
-      throw new Error(data.error || 'Booking reference not found. Please check your ID.');
-    }
-
-    currentTrackedBooking = data.booking;
-    renderTrackingView(data.booking);
-  } catch (err) {
-    resultDiv.innerHTML = `<div class="alert alert-warning border-0 small my-3"><i class="fa-solid fa-triangle-exclamation me-1"></i> ${err.message}</div>`;
-  }
+  searchBookingTracking();
 }
 
 function renderTrackingView(b) {
-  const container = document.getElementById('trackingResult');
-  container.innerHTML = ''; // Clear spinner
+  const container = document.getElementById('trackingResult') || document.getElementById('trackResultsContainer');
+  if (container && container.id === 'trackingResult') {
+    container.innerHTML = '';
+    container.style.display = 'block';
+  }
 
   const statusHierarchy = ['received', 'reviewing', 'confirmed', 'driver_assigned', 'in_transit', 'delivered'];
-  const currentIdx = statusHierarchy.indexOf(b.status || 'received');
+  const currentIdx = statusHierarchy.indexOf((b.status || 'received').toLowerCase());
+  const mappedIdx = currentIdx >= 0 ? currentIdx : 0;
 
   const statusLabels = {
     'received': 'Order Received',
@@ -1588,37 +1640,61 @@ function renderTrackingView(b) {
     'delivered': 'Delivered & Shifted'
   };
 
-  document.getElementById('trackModalBookingId').innerText = b.id;
-  document.getElementById('trackCurrentStatusBadge').innerText = statusLabels[b.status] || b.status;
+  const trackIdEl = document.getElementById('trackModalBookingId') || document.getElementById('trackDisplayId');
+  const trackStatusEl = document.getElementById('trackCurrentStatusBadge') || document.getElementById('trackStatusBadge');
+  const trackCustNameEl = document.getElementById('trackCustName');
 
-  // Stepper UI
-  for (let i = 1; i <= 4; i++) {
-    const stepEl = document.getElementById(`trackStep${i}`);
-    if (!stepEl) continue;
-    
-    if (i <= currentIdx + 1) {
-      stepEl.classList.add('active');
-    } else {
-      stepEl.classList.remove('active');
-    }
+  if (trackIdEl) trackIdEl.innerText = b.id || 'RB-XXXXXX';
+  if (trackStatusEl) trackStatusEl.innerText = statusLabels[(b.status || 'received').toLowerCase()] || (b.status || 'received');
+  if (trackCustNameEl) trackCustNameEl.innerText = b.customer_name || b.name || 'Customer';
+
+  const routeTextEl = document.getElementById('trackRouteText') || document.getElementById('trackPickupText');
+  if (routeTextEl) {
+    routeTextEl.innerText = `${b.pickup_address || 'Jaipur'} ➔ ${b.drop_address || 'Delhi'}`;
   }
+  const dateTextEl = document.getElementById('trackDateText');
+  if (dateTextEl) dateTextEl.innerText = b.shifting_date || 'Upcoming';
 
-  // Update Route / Date
-  document.getElementById('trackRouteText').innerText = `${b.pickup_address || 'Jaipur'} ➔ ${b.drop_address || 'Delhi'}`;
-  document.getElementById('trackDateText').innerText = b.shifting_date || 'Upcoming';
+  const summaryBookingId = document.getElementById('trackDisplayId');
+  if (summaryBookingId) summaryBookingId.innerText = b.id || 'RB-XXXXXX';
+  const summaryPickup = document.getElementById('trackPickupText');
+  if (summaryPickup) summaryPickup.innerText = b.pickup_address || 'Jaipur';
+  const summaryDrop = document.getElementById('trackDropText');
+  if (summaryDrop) summaryDrop.innerText = b.drop_address || 'Delhi';
+  const summaryDistance = document.getElementById('trackDistanceText');
+  if (summaryDistance) summaryDistance.innerText = `${b.distance_km || b.distanceKm || 25} KM`;
+  const summaryAmount = document.getElementById('trackAmountText');
+  if (summaryAmount) summaryAmount.innerText = `₹${Number(b.total_amount || 0).toLocaleString('en-IN')}`;
 
-  // Driver Card
-  const driverCard = document.getElementById('assignedDriverCard');
+  const driverCard = document.getElementById('assignedDriverCard') || document.getElementById('trackDriverCard');
+  const driverName = document.getElementById('driverName') || document.getElementById('trackDriverName');
+  const driverVehicle = document.getElementById('driverVehicle') || document.getElementById('trackVehicleNo');
+  const driverPhone = document.getElementById('driverPhoneCall') || document.getElementById('trackCallDriverBtn');
+
   if (b.assigned_driver_name) {
-    driverCard.style.display = 'flex';
-    document.getElementById('driverName').innerText = b.assigned_driver_name;
-    document.getElementById('driverVehicle').innerText = b.assigned_vehicle_no || 'Tata Ace';
-    document.getElementById('driverPhoneCall').href = `tel:+91${b.assigned_driver_phone || '7296831460'}`;
-  } else {
+    if (driverCard) driverCard.style.display = 'flex';
+    if (driverName) driverName.innerText = b.assigned_driver_name;
+    if (driverVehicle) driverVehicle.innerText = b.assigned_vehicle_no || 'Tata Ace';
+    if (driverPhone) driverPhone.href = `tel:+91${b.assigned_driver_phone || '7296831460'}`;
+    const driverPhoneText = document.getElementById('trackDriverPhone');
+    if (driverPhoneText) driverPhoneText.innerText = b.assigned_driver_phone || '7296831460';
+  } else if (driverCard) {
     driverCard.style.display = 'none';
   }
 
-  container.style.display = 'block';
+  const timelineKeys = ['received', 'reviewing', 'confirmed', 'driver_assigned', 'in_transit', 'delivered'];
+  timelineKeys.forEach((stepKey, index) => {
+    const nodeId = `stepNode_${stepKey}`;
+    const node = document.getElementById(nodeId);
+    if (node) node.classList.toggle('active', index <= mappedIdx);
+
+    const legacyNode = document.getElementById(`trackStep${index + 1}`);
+    if (legacyNode) legacyNode.classList.toggle('active', index <= mappedIdx);
+  });
+
+  if (container && container.id === 'trackResultsContainer') {
+    container.style.display = 'block';
+  }
 }
 
 function openInvoiceForTrackedBooking() {
@@ -1773,18 +1849,6 @@ async function submitCustomerFeedback() {
 /* ==========================================================================
    8. BACKEND PERSISTENCE & DATA LOADING
    ========================================================================== */
-
-async function loadBackendData() {
-  try {
-    const savedTheme = localStorage.getItem('rudraksha_theme_settings');
-    if (savedTheme) applyCSSVariables(JSON.parse(savedTheme));
-
-    const savedRates = localStorage.getItem('rudraksha_rates_config');
-    if (savedRates) ratesConfig = { ...ratesConfig, ...JSON.parse(savedRates) };
-  } catch (err) {
-    console.warn('Backend load defaults applied:', err);
-  }
-}
 
 function applyCSSVariables(theme) {
   if (!theme) return;

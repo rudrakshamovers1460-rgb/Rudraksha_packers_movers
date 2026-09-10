@@ -449,14 +449,22 @@ ${dispatchUrl}`;
     created_at: new Date().toISOString()
   };
 
-  // Attempt backend persistence (non-blocking)
+  // Persist on the backend before showing confirmation.
   try {
-    fetch(`${PARCEL_API_ENDPOINT}/parcels`, {
+    const response = await fetch(`${PARCEL_API_ENDPOINT}/parcels`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(bookingPayload)
-    }).catch(() => {});
-  } catch {}
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.parcel) {
+      throw new Error(result.error || 'Parcel booking could not be saved.');
+    }
+    Object.assign(bookingPayload, result.parcel);
+  } catch (err) {
+    alert(`Booking failed: ${err.message}`);
+    return;
+  }
 
   // Save in shared storage across app (rudraksha_parcels & rudraksha_parcels_history)
   try {

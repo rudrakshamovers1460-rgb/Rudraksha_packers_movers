@@ -126,7 +126,7 @@ async function fetchBookingAndTrack(query) {
             isParcel: true
           };
         }
-      }
+      } catch {}
     }
 
     if (!booking) {
