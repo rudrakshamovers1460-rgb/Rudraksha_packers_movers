@@ -1620,6 +1620,45 @@ async function trackBookingStatus() {
   searchBookingTracking();
 }
 
+async function fetchBookingAndTrack(query) {
+  const error = document.getElementById('trackSearchError');
+  const results = document.getElementById('trackResultsContainer');
+  const button = document.querySelector('#trackSearchInput + button');
+
+  if (error) {
+    error.textContent = '';
+    error.style.display = 'none';
+  }
+  if (results) results.style.display = 'none';
+  if (button) {
+    button.disabled = true;
+    button.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Tracking...';
+  }
+
+  try {
+    const response = await fetch(`${BOOKING_API_URL}/bookings/track/${encodeURIComponent(query)}`);
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || !data.booking) {
+      throw new Error(data.error || 'No active booking found matching your ID or phone number.');
+    }
+
+    currentTrackedBooking = data.booking;
+    renderTrackingView(currentTrackedBooking);
+  } catch (trackError) {
+    console.error('Booking tracking error:', trackError);
+    if (error) {
+      error.textContent = trackError.message || 'Unable to load booking tracking right now.';
+      error.style.display = 'block';
+    }
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.innerHTML = '<i class="fa-solid fa-magnifying-glass me-1"></i> Track';
+    }
+  }
+}
+
 function renderTrackingView(b) {
   const container = document.getElementById('trackingResult') || document.getElementById('trackResultsContainer');
   if (container && container.id === 'trackingResult') {
