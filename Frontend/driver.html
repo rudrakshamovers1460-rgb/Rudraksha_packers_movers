@@ -70,7 +70,7 @@
     };
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js?v=3.8.0').then(function(reg) {
+      navigator.serviceWorker.register('./sw.js?v=3.9.0').then(function(reg) {
         reg.update();
         console.log('[Rider SW] Active scope:', reg.scope);
       }).catch(function(err) {
@@ -612,6 +612,136 @@
       cursor: pointer; transition: all 0.2s;
     }
 
+    /* ===================== HIGH-PRIORITY NEW ORDER ALERT OVERLAY ===================== */
+    .new-order-alert-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 10002;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: alertBackdropFade 0.25s ease;
+    }
+    .new-order-alert-overlay.active { display: flex; }
+    @keyframes alertBackdropFade { from { opacity: 0; } to { opacity: 1; } }
+    .new-order-alert-card {
+      background: #13141c;
+      border: 2px solid rgba(249, 115, 22, 0.45);
+      border-radius: 24px;
+      padding: 22px 20px 24px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.92), 0 0 35px rgba(249,115,22,0.22);
+      animation: alertModalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      color: #fff;
+    }
+    @keyframes alertModalPop {
+      from { transform: scale(0.92) translateY(20px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .alert-bell-ring {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: rgba(249, 115, 22, 0.18);
+      border: 1.5px solid #f97316;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; color: #f97316; flex-shrink: 0;
+      box-shadow: 0 0 16px rgba(249,115,22,0.4);
+    }
+    .alert-badge-pill {
+      font-size: 0.76rem; font-weight: 800; color: #f97316;
+      letter-spacing: 0.4px; text-transform: uppercase;
+    }
+    .alert-route-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 14px;
+      margin: 12px 0;
+    }
+    .alert-route-step {
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .alert-route-dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; flex-shrink: 0; margin-top: 2px;
+    }
+    .alert-route-dot.pickup {
+      background: rgba(249,115,22,0.18);
+      border: 1.5px solid #f97316;
+      color: #f97316;
+    }
+    .alert-route-dot.drop {
+      background: rgba(34,197,94,0.18);
+      border: 1.5px solid #22c55e;
+      color: #22c55e;
+    }
+    .alert-route-divider {
+      width: 2px; height: 16px; background: rgba(255,255,255,0.12);
+      margin: 4px 0 4px 13px;
+    }
+    .alert-step-label {
+      font-size: 0.62rem; color: #94a3b8; font-weight: 700;
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .alert-step-addr {
+      font-size: 0.85rem; font-weight: 600; color: #f1f5f9;
+      line-height: 1.3; margin-top: 2px;
+    }
+    .alert-actions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 2fr;
+      gap: 10px;
+    }
+    .btn-alert-action {
+      border: none;
+      border-radius: 14px;
+      padding: 13px 10px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-alert-silent {
+      background: rgba(251, 191, 36, 0.12);
+      border: 1.5px solid rgba(251, 191, 36, 0.4);
+      color: #fbbf24;
+    }
+    .btn-alert-silent:hover {
+      background: rgba(251, 191, 36, 0.25);
+      transform: translateY(-2px);
+    }
+    .btn-alert-decline {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1.5px solid rgba(239, 68, 68, 0.45);
+      color: #f87171;
+    }
+    .btn-alert-decline:hover {
+      background: rgba(239, 68, 68, 0.25);
+      transform: translateY(-2px);
+    }
+    .btn-alert-accept {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+      font-size: 0.88rem;
+      flex-direction: row;
+      gap: 6px;
+      box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+    }
+    .btn-alert-accept:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 26px rgba(34, 197, 94, 0.6);
+    }
+
     /* ===================== DRIVER INSTALL OVERLAY MODAL ===================== */
     .driver-install-overlay {
       display: none; position: fixed; inset: 0;
@@ -1043,6 +1173,83 @@
     </a>
   </div>
 
+  <!-- =================== HIGH-PRIORITY NEW ORDER ALERT OVERLAY =================== -->
+  <div class="new-order-alert-overlay" id="newOrderAlertOverlay">
+    <div class="new-order-alert-card">
+      <!-- Top Pulsing Bell & Header -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="alert-bell-ring">
+            <i class="fa-solid fa-bell fa-shake"></i>
+          </div>
+          <div>
+            <div class="alert-badge-pill" id="alertModalBadgeText">🚨 NAYA ORDER ASSIGN HUA HAI!</div>
+            <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 2px;" id="alertModalOrderId">Booking #RP-PCL-XXXX</div>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 0.65rem; color: #22c55e; font-weight: 800; text-transform: uppercase;">100% Kamai</div>
+          <div style="font-size: 1.6rem; font-weight: 900; color: #22c55e; line-height: 1;" id="alertModalFare">₹0</div>
+        </div>
+      </div>
+
+      <!-- Route Box -->
+      <div class="alert-route-card">
+        <div class="alert-route-step">
+          <div class="alert-route-dot pickup"><i class="fa-solid fa-arrow-up"></i></div>
+          <div style="flex: 1; min-width: 0;">
+            <div class="alert-step-label">PICKUP POINT</div>
+            <div class="alert-step-addr" id="alertModalPickup">Pickup Location, Jaipur</div>
+          </div>
+        </div>
+        <div class="alert-route-divider"></div>
+        <div class="alert-route-step">
+          <div class="alert-route-dot drop"><i class="fa-solid fa-location-dot"></i></div>
+          <div style="flex: 1; min-width: 0;">
+            <div class="alert-step-label">DELIVERY DROP</div>
+            <div class="alert-step-addr" id="alertModalDrop">Delivery Location, Jaipur</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sound status & Timer indicator -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin: 10px 2px 12px; font-size: 0.75rem;">
+        <div id="alertSoundStatusText" style="color: #22c55e; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+          <i class="fa-solid fa-volume-high"></i> <span>Chime Active</span>
+        </div>
+        <div style="color: #cbd5e1; font-size: 0.72rem;">
+          Auto-dismiss in <strong id="alertCountdownSeconds" style="color: #f97316;">45</strong>s
+        </div>
+      </div>
+
+      <!-- Countdown Progress Bar -->
+      <div style="height: 4px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin-bottom: 16px;">
+        <div id="alertTimerProgress" style="height: 100%; width: 100%; background: linear-gradient(90deg, #22c55e, #f97316); transition: width 1s linear;"></div>
+      </div>
+
+      <!-- 3 KEY ACTION BUTTONS: [SILENT], [DECLINE], [ACCEPT] -->
+      <div class="alert-actions-grid">
+        <!-- 1. Silent Button -->
+        <button type="button" class="btn-alert-action btn-alert-silent" id="btnAlertSilent" onclick="silenceIncomingAlertOrder()" title="Chime aawaz band karein">
+          <i class="fa-solid fa-volume-xmark" id="btnAlertSilentIcon"></i>
+          <span id="btnAlertSilentText">SILENT</span>
+        </button>
+
+        <!-- 2. Decline Button -->
+        <button type="button" class="btn-alert-action btn-alert-decline" id="btnAlertDecline" onclick="declineIncomingAlertOrder()" title="Order decline karein">
+          <i class="fa-solid fa-xmark"></i>
+          <span>DECLINE</span>
+        </button>
+
+        <!-- 3. Accept Button -->
+        <button type="button" class="btn-alert-action btn-alert-accept" id="btnAlertAccept" onclick="acceptIncomingAlertOrder()" title="Order accept karein">
+          <i class="fa-solid fa-circle-check" id="alertBtnIcon"></i>
+          <span id="alertBtnLabel">ACCEPT (₹<span id="alertBtnFare">0</span>)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- =================== OTP BOTTOM SHEET =================== -->
   <div class="otp-overlay" id="otpOverlay">
     <div class="otp-sheet">
@@ -1159,6 +1366,6 @@
 
 
   <!-- Dedicated Rider Partner Engine JS -->
-  <script src="driver.js?v=3.8.0"></script>
+  <script src="driver.js?v=3.9.0"></script>
 </body>
 </html>

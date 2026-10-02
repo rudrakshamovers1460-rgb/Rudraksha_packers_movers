@@ -945,6 +945,51 @@ module.exports = {
     return await this._saveParcelUpdate(parcel, payload);
   },
 
+  async declineParcelDriver(id, driverInfo) {
+    const cleanId = String(id || '').trim();
+    let parcel = await this.getParcelByIdOrPhone(cleanId);
+    if (!parcel) {
+      const parcels = await this.getParcels();
+      parcel = parcels.find(p => 
+        (p.parcel_id && p.parcel_id.toLowerCase() === cleanId.toLowerCase()) || 
+        (p.id && String(p.id).toLowerCase() === cleanId.toLowerCase())
+      );
+    }
+    if (!parcel) parcel = { parcel_id: cleanId, id: cleanId };
+
+    const prevDriverId = driverInfo.driver_id || parcel.driver_id || '';
+    const prevDriverName = driverInfo.driver_name || parcel.assigned_driver_name || 'Driver';
+    const prevDriverPhone = driverInfo.driver_phone || parcel.assigned_driver_phone || '';
+
+    // Maintain history of drivers who declined this parcel
+    const declinedList = Array.isArray(parcel.declined_driver_ids) ? [...parcel.declined_driver_ids] : [];
+    if (prevDriverId && !declinedList.includes(String(prevDriverId))) {
+      declinedList.push(String(prevDriverId));
+    }
+    if (prevDriverPhone && !declinedList.includes(String(prevDriverPhone))) {
+      declinedList.push(String(prevDriverPhone));
+    }
+
+    const payload = {
+      driver_id: null,
+      assigned_driver_name: null,
+      assigned_driver_phone: null,
+      assigned_vehicle_no: null,
+      assigned_vehicle_type: null,
+      booking_status: 'driver_declined',
+      status: 'driver_declined',
+      declined_driver_id: prevDriverId,
+      declined_driver_name: prevDriverName,
+      declined_driver_phone: prevDriverPhone,
+      declined_driver_ids: declinedList,
+      declined_at: new Date().toISOString(),
+      decline_reason: driverInfo.reason || 'Driver declined via app notification',
+      updated_at: new Date().toISOString()
+    };
+
+    return await this._saveParcelUpdate(parcel, payload);
+  },
+
   async assignParcelOtps(id, pickupOtp, deliveryOtp) {
     const cleanId = String(id || '').trim();
     let parcel = await this.getParcelByIdOrPhone(cleanId);

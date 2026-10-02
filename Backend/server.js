@@ -851,11 +851,13 @@ app.get('/api/rider/jobs', requireRider, async (req, res, next) => {
     const riderPhone = String(req.rider.phone || '').replace(/\D/g, '');
     const parcels = await db.getParcels();
 
-    // 1. Find currently active assigned trip
+    // 1. Find currently active assigned trip (must NOT be declined or delivered)
     const activeTrip = parcels.find(p => {
       const isAssigned = (p.driver_id === riderId) || (p.assigned_driver_phone && String(p.assigned_driver_phone).replace(/\D/g, '') === riderPhone);
       const activeStatuses = ['driver_assigned', 'reached_pickup', 'picked_up', 'in_transit', 'out_for_delivery'];
-      return isAssigned && activeStatuses.includes(p.booking_status || p.status);
+      const isDeclined = p.booking_status === 'driver_declined' || p.status === 'driver_declined';
+      const isDelivered = p.booking_status === 'delivered' || p.status === 'delivered' || p.delivery_otp_verified;
+      return isAssigned && activeStatuses.includes(p.booking_status || p.status) && !isDeclined && !isDelivered;
     }) || null;
 
     // 2. Find available jobs waiting for acceptance (if rider is on-duty)
@@ -863,7 +865,17 @@ app.get('/api/rider/jobs', requireRider, async (req, res, next) => {
     if (req.rider.onDuty !== false && !activeTrip) {
       availableJobs = parcels.filter(p => {
         const st = p.booking_status || p.status;
-        return (st === 'searching_driver' || st === 'received') && !p.driver_id;
+        const isWaiting = (st === 'searching_driver' || st === 'received');
+        const notAssigned = !p.driver_id;
+        const isDelivered = st === 'delivered' || p.delivery_otp_verified;
+
+        // Exclude if this rider previously declined this order
+        const declinedList = Array.isArray(p.declined_driver_ids) ? p.declined_driver_ids.map(String) : [];
+        const isDeclinedByMe = String(p.declined_driver_id || '') === String(riderId) ||
+                               declinedList.includes(String(riderId)) ||
+                               (riderPhone && (String(p.declined_driver_phone || '').replace(/\D/g, '') === riderPhone || declinedList.includes(riderPhone)));
+
+        return isWaiting && notAssigned && !isDelivered && !isDeclinedByMe;
       }).slice(0, 5);
     }
 
@@ -895,7 +907,7 @@ app.post('/api/rider/jobs/:id/accept', requireRider, async (req, res, next) => {
     // Send Telegram alert
     const msg = `🛵 *RIDER ACCEPTED JOB* 🚀\n` +
                 `━━━━━━━━━━━━━━━━━━━━\n` +
-                `🆔 *Order:* \`${updated.parcel_id}\`\n` +
+                `🆔 *Order:* \`${updated.parcel_id || parcelId}\`\n` +
                 `👨‍✈️ *Rider:* ${req.rider.driver_name} (+91 ${req.rider.phone})\n` +
                 `📍 *Pickup:* ${updated.pickup_address}\n` +
                 `🏁 *Drop:* ${updated.drop_address}\n` +
@@ -904,6 +916,43 @@ app.post('/api/rider/jobs/:id/accept', requireRider, async (req, res, next) => {
     telegram.sendTelegramMessage(msg).catch(console.error);
 
     res.json({ success: true, parcel: updated, message: 'Trip accepted! Please head to the pickup point.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 6B. Decline Assigned / Available Job (Rider declines)
+app.post('/api/rider/jobs/:id/decline', requireRider, async (req, res, next) => {
+  try {
+    const parcelId = req.params.id;
+    const reason = req.body?.reason || 'Driver declined via app notification';
+
+    const updated = await db.declineParcelDriver(parcelId, {
+      driver_id: req.rider.id,
+      driver_name: req.rider.driver_name,
+      driver_phone: req.rider.phone,
+      reason
+    });
+
+    if (!updated) return res.status(404).json({ error: 'Order not found.' });
+
+    // Send urgent Telegram alert to Admin so Admin immediately reassigns
+    const msg = `⚠️ *RIDER DECLINED ORDER* ❌\n` +
+                `━━━━━━━━━━━━━━━━━━━━\n` +
+                `🆔 *Order ID:* \`${updated.parcel_id || parcelId}\`\n` +
+                `👨‍✈️ *Declined By:* ${req.rider.driver_name} (+91 ${req.rider.phone})\n` +
+                `📍 *Pickup:* ${updated.pickup_address || '-'}\n` +
+                `🏁 *Drop:* ${updated.drop_address || '-'}\n` +
+                `💰 *Fare:* ₹${updated.total_amount || 0}\n` +
+                `⚡ *Action Required:* Please reassign this order to another driver in Admin Panel.\n` +
+                `━━━━━━━━━━━━━━━━━━━━`;
+    telegram.sendTelegramMessage(msg).catch(console.error);
+
+    res.json({
+      success: true,
+      parcel: updated,
+      message: 'Order declined successfully. Admin will reassign to another driver.'
+    });
   } catch (err) {
     next(err);
   }

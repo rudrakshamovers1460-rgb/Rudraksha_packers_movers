@@ -93,7 +93,11 @@ class DriverTaskHandler extends TaskHandler {
           final status = order.bookingStatus;
           final isPending = (status == 'driver_assigned' || status == 'received');
 
-          if (isPending && _lastNotifiedParcelId != order.parcelId) {
+          final prefs = await SharedPreferences.getInstance();
+          final declinedList = prefs.getStringList('rudraksha_driver_declined_parcels') ?? [];
+          final isDeclined = declinedList.contains(order.parcelId) || status == 'driver_declined';
+
+          if (isPending && !isDeclined && _lastNotifiedParcelId != order.parcelId) {
             _lastNotifiedParcelId = order.parcelId;
             debugPrint('[BackgroundService] 🚨 NEW ASSIGNED ORDER: ${order.parcelId}');
 
@@ -103,7 +107,7 @@ class DriverTaskHandler extends TaskHandler {
               FlutterForegroundTask.setOnLockScreenVisibility(true);
             } catch (_) {}
 
-            // Trigger full siren sound, vibration & lock screen notification with Accept/Decline actions!
+            // Trigger sound, vibration & lock screen notification with Accept/Decline actions!
             await AlertManager().triggerNewOrderAlert(order);
 
             // Update foreground service notification with Mute, Accept & Decline action buttons
@@ -157,7 +161,7 @@ class DriverTaskHandler extends TaskHandler {
           final prefs = await SharedPreferences.getInstance();
           final token = prefs.getString('rudraksha_driver_token');
           final baseUrl = prefs.getString('rudraksha_api_base_url') ?? ApiConfig.currentBaseUrl;
-          final acceptUrl = Uri.parse('$baseUrl/parcels/$_lastNotifiedParcelId/accept');
+          final acceptUrl = Uri.parse('$baseUrl/rider/jobs/$_lastNotifiedParcelId/accept');
           await http.post(
             acceptUrl,
             headers: {
@@ -177,9 +181,33 @@ class DriverTaskHandler extends TaskHandler {
       FlutterForegroundTask.launchApp();
     } else if (id == 'decline_order') {
       await AlertManager().stopAlert();
+      if (_lastNotifiedParcelId != null) {
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          final token = prefs.getString('rudraksha_driver_token');
+          final baseUrl = prefs.getString('rudraksha_api_base_url') ?? ApiConfig.currentBaseUrl;
+          final declineUrl = Uri.parse('$baseUrl/rider/jobs/$_lastNotifiedParcelId/decline');
+          await http.post(
+            declineUrl,
+            headers: {
+              'Content-Type': 'application/json',
+              if (token != null) 'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode({'reason': 'Declined via notification button'}),
+          );
+
+          final declinedList = prefs.getStringList('rudraksha_driver_declined_parcels') ?? [];
+          if (!declinedList.contains(_lastNotifiedParcelId)) {
+            declinedList.add(_lastNotifiedParcelId!);
+            await prefs.setStringList('rudraksha_driver_declined_parcels', declinedList);
+          }
+        } catch (e) {
+          debugPrint('[BackgroundService] Decline order error: $e');
+        }
+      }
       await FlutterForegroundTask.updateService(
         notificationTitle: '🟢 Rudraksha Driver: ON DUTY',
-        notificationText: '📡 Live GPS Active • Listening for orders',
+        notificationText: '📡 Live GPS Active • Order declined',
         notificationButtons: [],
       );
     } else {

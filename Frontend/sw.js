@@ -3,7 +3,7 @@
  * Ultra-resilient, crash-proof caching with live network priority
  */
 
-const CACHE_NAME = 'rudraksha-pwa-v3.8.0';
+const CACHE_NAME = 'rudraksha-pwa-v3.9.0';
 const STATIC_ASSETS = [
   './index.html',
   './parcel.html',
@@ -147,13 +147,30 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// 6. Notification Click Event - Bring Driver App to foreground & focus
+// 6. Notification Click Event - Handle Accept, Decline, Silent & Focus
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+  const action = event.action; // 'accept', 'decline', 'silent', or empty if body clicked
+  const orderId = event.notification.data?.orderId;
   const targetUrl = event.notification.data?.url || './driver.html';
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // Broadcast the rider action to all open driver windows
+      clientList.forEach((client) => {
+        client.postMessage({
+          type: 'RIDER_NOTIFICATION_ACTION',
+          action: action || 'focus',
+          orderId: orderId
+        });
+      });
+
+      // If user tapped Silent or Decline, do NOT force window to foreground if action was directly from lock screen
+      if (action === 'silent') {
+        return;
+      }
+
+      // If Accept or clicked on notification body, bring Driver App to foreground & focus
       for (const client of clientList) {
         if (client.url && client.url.includes('driver.html') && 'focus' in client) {
           return client.focus();
@@ -164,5 +181,19 @@ self.addEventListener('notificationclick', (event) => {
       }
     })
   );
+});
+
+// 7. Notification Dismissed / Swiped Away Event - Silence audio
+self.addEventListener('notificationclose', (event) => {
+  const orderId = event.notification.data?.orderId;
+  self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+    clientList.forEach((client) => {
+      client.postMessage({
+        type: 'RIDER_NOTIFICATION_ACTION',
+        action: 'silent',
+        orderId: orderId
+      });
+    });
+  });
 });
 

@@ -60,7 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
       if (action == 'accept' && parcelId != null) {
         _handleNotificationAccept(parcelId);
       } else if (action == 'decline' && parcelId != null) {
-        _acknowledgedAssignedTrips.add(parcelId);
+        _handleNotificationDecline(parcelId);
+      } else if (action == 'silent') {
+        AlertManager().muteSound();
       }
     };
 
@@ -98,6 +100,33 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       }
+    }
+  }
+
+  void _handleNotificationDecline(String parcelId) async {
+    _acknowledgedAssignedTrips.add(parcelId);
+    _isAlertDialogOpen = false;
+    await AlertManager().stopAlert(notifId: parcelId.hashCode);
+
+    // Save permanently in SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final declinedList = prefs.getStringList('rudraksha_driver_declined_parcels') ?? [];
+    if (!declinedList.contains(parcelId)) {
+      declinedList.add(parcelId);
+      await prefs.setStringList('rudraksha_driver_declined_parcels', declinedList);
+    }
+
+    // Inform backend and admin
+    await ApiService.declineJob(parcelId);
+    await _syncFeed();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('❌ Order declined. Admin will reassign to another driver.'),
+          backgroundColor: Color(0xFFEF4444),
+        ),
+      );
     }
   }
 
@@ -219,9 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (ctx) => OrderAlertDialog(
         order: order,
         onDecline: () {
-          _acknowledgedAssignedTrips.add(order.parcelId);
-          _isAlertDialogOpen = false;
-          AlertManager().stopAlert(notifId: order.parcelId.hashCode);
+          _handleNotificationDecline(order.parcelId);
         },
         onAccept: () async {
           _acknowledgedAssignedTrips.add(order.parcelId);

@@ -2452,25 +2452,46 @@ function renderParcelsTable(list = allAdminParcels, page = null) {
     const isDelivered = p.delivery_otp_verified || status === 'delivered';
 
     const canChangeDriver = !isDelivered && status !== 'cancelled';
-    const driverDisplay = p.assigned_driver_name
-      ? `<div>
-           <strong class="text-white small">👨‍✈️ ${p.assigned_driver_name}</strong><br>
-           <span class="small text-muted">+91 ${dPhone}</span>
-           ${p.assigned_vehicle_type ? `<div class="badge bg-dark border border-secondary text-info-emphasis mt-1" style="font-size:0.65rem;">${p.assigned_vehicle_type}</div>` : ''}
-           ${canChangeDriver ? `
-             <div class="mt-1">
-               <button class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 shadow-sm" style="font-size: 0.70rem;" onclick="openAssignParcelDriverModal('${pId}', true)" title="Change / Reassign Driver">
-                 <i class="fa-solid fa-arrows-rotate me-1"></i>Change Driver
-               </button>
-             </div>
-           ` : ''}
+    const isDeclined = status === 'driver_declined' || (!p.assigned_driver_name && p.declined_driver_name);
+
+    const driverDisplay = isDeclined
+      ? `<div class="p-2 rounded" style="background: rgba(239,68,68,0.12); border: 1px dashed rgba(239,68,68,0.45); max-width: 220px;">
+           <div style="font-size: 0.70rem; color: #ef4444; font-weight: 800; display: flex; align-items: center; gap: 4px;">
+             <i class="fa-solid fa-triangle-exclamation"></i> DRIVER DECLINED
+           </div>
+           <div style="font-size: 0.75rem; color: #fff; font-weight: 700; margin-top: 2px;">
+             👨‍✈️ ${p.declined_driver_name || p.assigned_driver_name || 'Driver'}
+           </div>
+           <div style="font-size: 0.68rem; color: #94a3b8;">
+             +91 ${p.declined_driver_phone || p.assigned_driver_phone || '-'}
+           </div>
+           ${p.decline_reason ? `<div style="font-size: 0.65rem; color: #cbd5e1; font-style: italic; margin-top: 2px;">"${p.decline_reason}"</div>` : ''}
+           <div class="mt-2">
+             <button class="btn btn-sm btn-warning rounded-pill py-1 px-2 fw-bold shadow-sm w-100" style="font-size: 0.70rem;" onclick="openAssignParcelDriverModal('${pId}', true)" title="Reassign to another driver">
+               <i class="fa-solid fa-arrows-rotate me-1"></i> Reassign Driver
+             </button>
+           </div>
          </div>`
-      : `<button class="btn btn-sm btn-outline-warning rounded-pill py-0 px-2" style="font-size: 0.72rem;" onclick="openAssignParcelDriverModal('${pId}', false)"><i class="fa-solid fa-plus me-1"></i>Assign Driver</button>`;
+      : (p.assigned_driver_name
+        ? `<div>
+             <strong class="text-white small">👨‍✈️ ${p.assigned_driver_name}</strong><br>
+             <span class="small text-muted">+91 ${dPhone}</span>
+             ${p.assigned_vehicle_type ? `<div class="badge bg-dark border border-secondary text-info-emphasis mt-1" style="font-size:0.65rem;">${p.assigned_vehicle_type}</div>` : ''}
+             ${canChangeDriver ? `
+               <div class="mt-1">
+                 <button class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 shadow-sm" style="font-size: 0.70rem;" onclick="openAssignParcelDriverModal('${pId}', true)" title="Change / Reassign Driver">
+                   <i class="fa-solid fa-arrows-rotate me-1"></i>Change Driver
+                 </button>
+               </div>
+             ` : ''}
+           </div>`
+        : `<button class="btn btn-sm btn-outline-warning rounded-pill py-0 px-2" style="font-size: 0.72rem;" onclick="openAssignParcelDriverModal('${pId}', false)"><i class="fa-solid fa-plus me-1"></i>Assign Driver</button>`);
 
     const statusBadgeClass = {
       'searching_driver': 'bg-warning text-dark',
       'confirmed': 'bg-primary text-white',
       'driver_assigned': 'bg-info text-dark',
+      'driver_declined': 'bg-danger text-white border border-danger shadow-sm',
       'reached_pickup': 'bg-warning text-dark',
       'picked_up': 'bg-info text-dark',
       'in_transit': 'bg-primary text-white',
@@ -2483,6 +2504,7 @@ function renderParcelsTable(list = allAdminParcels, page = null) {
       'searching_driver': '🟡 Request Sent',
       'confirmed': '🔵 Confirmed',
       'driver_assigned': '🟣 Driver Assigned',
+      'driver_declined': '⚠️ Driver Declined (Reassign Needed)',
       'reached_pickup': '🟠 Reached Pickup',
       'picked_up': '📦 Parcel Picked Up',
       'in_transit': '🚚 In Transit',

@@ -214,6 +214,26 @@ class ApiService {
     }
   }
 
+  // 5B. Decline Job (Notifies backend and admin)
+  static Future<Map<String, dynamic>> declineJob(String parcelId) async {
+    try {
+      final url = Uri.parse('${ApiConfig.currentBaseUrl}/rider/jobs/$parcelId/decline');
+      final res = await http.post(
+        url,
+        headers: _getHeaders(),
+        body: jsonEncode({'reason': 'Driver declined via app notification'}),
+      ).timeout(const Duration(seconds: 8));
+
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200 && data['success'] == true) {
+        return {'success': true, 'parcel': data['parcel']};
+      }
+      return {'success': false, 'error': data['error'] ?? 'Could not decline order.'};
+    } catch (e) {
+      return {'success': false, 'error': 'Connection failed: $e'};
+    }
+  }
+
   // 6. Verify Pickup OTP
   static Future<Map<String, dynamic>> verifyPickupOtp(
       String parcelId, String otp) async {

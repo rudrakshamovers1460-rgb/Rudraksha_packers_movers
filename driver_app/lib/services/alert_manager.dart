@@ -37,6 +37,7 @@ class AlertManager {
           debugPrint('Dispatch notification action: ${details.actionId}, payload: ${details.payload}');
           if (details.actionId == 'silence_order') {
             muteSound();
+            onActionCallback?.call('silent', details.payload);
           } else if (details.actionId == 'decline_order') {
             stopAlert(notifId: details.payload?.hashCode);
             onActionCallback?.call('decline', details.payload);
@@ -68,7 +69,7 @@ class AlertManager {
               AndroidFlutterLocalNotificationsPlugin>()
           ?.createNotificationChannel(androidChannel);
 
-      // Configure Audio Player to play on ALARM stream (blasts through speaker even if media volume is 0)
+      // Configure Audio Player to play on ALARM stream
       try {
         await _audioPlayer.setAudioContext(
           AudioContext(
@@ -99,10 +100,10 @@ class AlertManager {
       FlutterForegroundTask.setOnLockScreenVisibility(true);
     } catch (_) {}
 
-    // 1. Play Siren Tone in Loop through Alarm Speaker Channel
+    // 1. Play Tone Once through Alarm Channel with soft, non-irritating volume
     try {
-      await _audioPlayer.setReleaseMode(ReleaseMode.loop);
-      await _audioPlayer.setVolume(1.0);
+      await _audioPlayer.setReleaseMode(ReleaseMode.release);
+      await _audioPlayer.setVolume(0.4);
       await _audioPlayer.play(AssetSource('siren.wav'));
     } catch (e) {
       debugPrint('Audio play error: $e');
