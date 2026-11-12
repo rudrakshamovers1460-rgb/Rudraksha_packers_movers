@@ -1,6 +1,6 @@
 # ==========================================
-# Robots.txt for Rudraksha Packers & Movers
-# Website: https://rudrakshapackers.com
+# Robots.txt for OM Rudraksha Packers & Movers
+# Website: https://rudraksha-packers-movers.pages.dev
 # ==========================================
 
 User-agent: *
@@ -9,9 +9,11 @@ Allow: /index.html
 Allow: /parcel.html
 Allow: /track.html
 Allow: /driver.html
+Allow: /privacy.html
 
 # Protect Admin Portal from Search Engine Indexing
 Disallow: /admin.html
+Disallow: /admin-manifest.json
 
 # Sitemap Location
-Sitemap: https://rudrakshapackers.com/sitemap.xml
+Sitemap: https://rudraksha-packers-movers.pages.dev/sitemap.xml

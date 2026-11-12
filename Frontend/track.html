@@ -3,58 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Shipment & Relocation Tracker | OM Rudraksha Packers & Movers</title>
-  <meta name="description" content="Track your house shifting, vehicle transport, and relocation in real-time with live GPS route maps, driver details, and delivery milestones.">
+  <title>Live Shipment &amp; Relocation Tracker | OM Rudraksha Packers &amp; Movers</title>
+  <meta name="description" content="Track your house shifting, vehicle transport, and express parcel delivery in real-time with live GPS route maps, driver details, and delivery milestones.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://rudraksha-packers-movers.pages.dev/track.html">
 
-  <!-- SECRET ACCESS & TRACKING GATEKEEPER (Prevents unauthorized URL discovery via search bar) -->
-  <script>
-    (function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const secretKey = urlParams.get('key') || urlParams.get('access') || urlParams.get('pass') || urlParams.get('via');
-      const hasTrackingParam = urlParams.has('id') || urlParams.has('booking') || urlParams.has('track') || urlParams.has('phone');
-      const VALID_KEYS = ['track', 'portal', 'home', 'nav', 'bannaji2026', 'track2026'];
-      const hasValidKey = secretKey && VALID_KEYS.includes(secretKey.toLowerCase());
+  <!-- Open Graph / Social Preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="OM Rudraksha Packers &amp; Movers">
+  <meta property="og:title" content="Live Shipment &amp; Relocation Tracker | OM Rudraksha Movers">
+  <meta property="og:description" content="Track your household shifting or courier parcel live on GPS map with instant milestone updates.">
+  <meta property="og:url" content="https://rudraksha-packers-movers.pages.dev/track.html">
+  <meta property="og:image" content="https://rudraksha-packers-movers.pages.dev/rudraksha_truck_hero.jpg">
 
-      const isInternalNav = sessionStorage.getItem('rudraksha_site_nav') === 'true';
-      const isGateOpen = sessionStorage.getItem('rudraksha_track_gate_unlocked') === 'true';
-      const isReferredFromSite = document.referrer && (document.referrer.includes(window.location.hostname) || document.referrer.includes('index.html') || document.referrer.includes('parcel.html'));
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Live Shipment &amp; Relocation Tracker | OM Rudraksha Movers">
+  <meta name="twitter:description" content="Real-time GPS tracking for home shifting, car/bike transport &amp; parcel delivery.">
+  <meta name="twitter:image" content="https://rudraksha-packers-movers.pages.dev/rudraksha_truck_hero.jpg">
 
-      if (hasTrackingParam || hasValidKey || isInternalNav || isReferredFromSite) {
-        sessionStorage.setItem('rudraksha_track_gate_unlocked', 'true');
-        sessionStorage.setItem('rudraksha_site_nav', 'true');
-      } else if (!isGateOpen) {
-        document.documentElement.innerHTML = `
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>404 Not Found</title>
-            <style>
-              body { margin: 0; background: #0b0c0e; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; padding: 20px; box-sizing: border-box; }
-              .card-404 { max-width: 440px; background: #13141a; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 45px 30px; box-shadow: 0 25px 60px rgba(0,0,0,0.85); }
-              .icon-ring { width: 68px; height: 68px; border-radius: 20px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #ef4444; font-size: 1.8rem; }
-              h1 { font-size: 2.4rem; margin: 0 0 10px; font-weight: 800; color: #ffffff; }
-              p { color: #94a3b8; font-size: 0.92rem; line-height: 1.6; margin-bottom: 25px; }
-              .btn-home { display: inline-block; background: linear-gradient(135deg, #f97316, #ea580c); color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 12px; font-weight: 700; font-size: 0.92rem; }
-            </style>
-          </head>
-          <body>
-            <div class="card-404">
-              <div class="icon-ring">⚠️</div>
-              <h1>404 Not Found</h1>
-              <p>The requested page was not found on this server or has been permanently moved.</p>
-              <a href="index.html" class="btn-home">Return to Home</a>
-            </div>
-            <script>
-              setTimeout(function() { window.location.replace("index.html"); }, 2200);
-            <\/script>
-          </body>
-          </html>
-        `;
-        window.stop();
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Live Shipment & Relocation Tracker",
+      "url": "https://rudraksha-packers-movers.pages.dev/track.html",
+      "description": "Real-time shipment and relocation tracking portal for OM Rudraksha Packers & Movers.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "OM Rudraksha Packers & Movers",
+        "url": "https://rudraksha-packers-movers.pages.dev/"
       }
-    })();
+    }
+  </script>
+
+  <!-- INTERNAL NAVIGATION SESSION HELPER -->
+  <script>
+    try {
+      sessionStorage.setItem('rudraksha_track_gate_unlocked', 'true');
+      sessionStorage.setItem('rudraksha_site_nav', 'true');
+    } catch (e) {}
   </script>
 
   <!-- Favicon & PWA Icons -->

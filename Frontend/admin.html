@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Enterprise Operations Hub | OM Rudraksha Packers & Movers</title>
+  <meta name="robots" content="noindex, nofollow">
 
 
   <!-- Favicon & PWA App Icons -->
@@ -21,7 +23,9 @@
   <!-- Google Fonts: Plus Jakarta Sans, Outfit & Noto Sans Devanagari -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
 
   <!-- FontAwesome 6 Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -39,13 +43,16 @@
   <!-- Multi-Language i18n Translation Engine -->
   <script src="i18n.js"></script>
 </head>
+
 <body class="cyber-dark-body">
 
   <!-- ==========================================================================
        1. AUTHENTICATION LOCK OVERLAY (Cyber Dark UI)
        ========================================================================== -->
-  <div id="adminLoginOverlay" style="position: fixed; inset: 0; background: rgba(13, 13, 15, 0.98); backdrop-filter: blur(25px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">
-    <div style="background: #17171A; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; width: 100%; max-width: 420px; padding: 36px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(208, 253, 56, 0.15); position: relative;">
+  <div id="adminLoginOverlay"
+    style="position: fixed; inset: 0; background: rgba(13, 13, 15, 0.98); backdrop-filter: blur(25px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div
+      style="background: #17171A; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; width: 100%; max-width: 420px; padding: 36px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(208, 253, 56, 0.15); position: relative;">
       <!-- Language Switcher in Login Overlay -->
       <div style="position: absolute; top: 20px; right: 20px;">
         <div class="lang-switcher-pill" onclick="toggleLanguage()" title="Switch Language / भाषा बदलें">
@@ -54,34 +61,41 @@
         </div>
       </div>
       <div class="text-center mb-4">
-        <div style="width: 58px; height: 58px; background: rgba(208, 253, 56, 0.1); border: 1px solid #D0FD38; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; box-shadow: 0 0 20px rgba(208, 253, 56, 0.3);">
+        <div
+          style="width: 58px; height: 58px; background: rgba(208, 253, 56, 0.1); border: 1px solid #D0FD38; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; box-shadow: 0 0 20px rgba(208, 253, 56, 0.3);">
           <i class="fa-solid fa-shield-halved fa-xl" style="color: #D0FD38;"></i>
         </div>
-        <h4 class="fw-bold text-white mb-1"><span data-i18n="admin_login_title">OM Rudraksha</span> <span style="color: #D0FD38;">Admin</span></h4>
+        <h4 class="fw-bold text-white mb-1"><span data-i18n="admin_login_title">OM Rudraksha</span> <span
+            style="color: #D0FD38;">Admin</span></h4>
         <p class="small text-muted mb-0" data-i18n="admin_login_box_sub">Enterprise Identity & Access Management</p>
       </div>
 
       <!-- Cooldown Lockout Alert -->
-      <div id="loginCooldownAlert" class="alert alert-warning py-2 px-3 small rounded-3 d-none mb-3" style="background: rgba(234, 179, 8, 0.15); border-color: #eab308; color: #fde047;">
+      <div id="loginCooldownAlert" class="alert alert-warning py-2 px-3 small rounded-3 d-none mb-3"
+        style="background: rgba(234, 179, 8, 0.15); border-color: #eab308; color: #fde047;">
         <i class="fa-solid fa-clock-rotate-left me-1"></i> <span id="loginCooldownMsg">Security cooldown active</span>
       </div>
 
       <!-- Error Alert -->
-      <div id="loginErrorAlert" class="alert alert-danger py-2 px-3 small rounded-3 d-none mb-3" style="background: rgba(239, 68, 68, 0.15); border-color: #ef4444; color: #fca5a5;">
+      <div id="loginErrorAlert" class="alert alert-danger py-2 px-3 small rounded-3 d-none mb-3"
+        style="background: rgba(239, 68, 68, 0.15); border-color: #ef4444; color: #fca5a5;">
         <i class="fa-solid fa-circle-exclamation me-1"></i> <span id="loginErrorMsg">Invalid credentials</span>
       </div>
 
       <form id="adminLoginForm" onsubmit="event.preventDefault(); submitAdminLogin();" autocomplete="off">
         <div class="mb-3">
           <label class="cyber-label" data-i18n="admin_lbl_username">Admin Username</label>
-          <input type="text" class="cyber-input" id="adminUsernameInput" placeholder="Enter Admin ID" data-i18n-placeholder="admin_ph_username" autocomplete="off" value="" required>
+          <input type="text" class="cyber-input" id="adminUsernameInput" placeholder="Enter Admin ID"
+            data-i18n-placeholder="admin_ph_username" autocomplete="off" value="" required>
         </div>
 
         <div class="mb-3">
           <label class="cyber-label" data-i18n="admin_lbl_password">Security Key / Password</label>
           <div class="position-relative">
-            <input type="password" class="cyber-input" id="adminPasswordInput" placeholder="••••••••••••" autocomplete="new-password" value="" required style="padding-right: 42px;">
-            <button type="button" onclick="toggleAdminPassVisibility()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;">
+            <input type="password" class="cyber-input" id="adminPasswordInput" placeholder="••••••••••••"
+              autocomplete="new-password" value="" required style="padding-right: 42px;">
+            <button type="button" onclick="toggleAdminPassVisibility()"
+              style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;">
               <i class="fa-solid fa-eye" id="passToggleIcon"></i>
             </button>
           </div>
@@ -89,7 +103,8 @@
 
         <div class="d-flex justify-content-between align-items-center mb-4">
           <label class="d-flex align-items-center gap-2 small text-muted cursor-pointer" style="cursor: pointer;">
-            <input type="checkbox" id="rememberAdminCheck" style="accent-color: #D0FD38;"> <span data-i18n="admin_lbl_remember">Remember session</span>
+            <input type="checkbox" id="rememberAdminCheck" style="accent-color: #D0FD38;"> <span
+              data-i18n="admin_lbl_remember">Remember session</span>
           </label>
           <span class="cyber-badge-pill"><i class="fa-solid fa-lock text-success me-1"></i> 256-Bit SSL</span>
         </div>
@@ -98,15 +113,18 @@
           <i class="fa-solid fa-bolt me-1"></i> <span data-i18n="admin_btn_unlock">Unlock Dashboard</span>
         </button>
 
-        <div class="d-flex justify-content-between align-items-center mt-3 small text-muted" style="font-size: 0.72rem;">
-          <span><i class="fa-solid fa-shield-halved text-success me-1"></i> <span data-i18n="admin_txt_restricted">Restricted Access</span></span>
+        <div class="d-flex justify-content-between align-items-center mt-3 small text-muted"
+          style="font-size: 0.72rem;">
+          <span><i class="fa-solid fa-shield-halved text-success me-1"></i> <span
+              data-i18n="admin_txt_restricted">Restricted Access</span></span>
           <span data-i18n="admin_txt_version">v2.4 Enterprise Portal</span>
         </div>
       </form>
 
       <div class="mt-4 pt-3 border-top border-secondary text-center">
         <a href="index.html" class="small text-decoration-none" style="color: var(--text-muted);">
-          <i class="fa-solid fa-arrow-left me-1"></i> <span data-i18n="admin_btn_return_site">Return to Client Website</span>
+          <i class="fa-solid fa-arrow-left me-1"></i> <span data-i18n="admin_btn_return_site">Return to Client
+            Website</span>
         </a>
       </div>
     </div>
@@ -123,18 +141,21 @@
       <!-- TOP BAR HEADER WITH BRAND LOGO & DUAL RESPONSIVE ROWS -->
       <header class="cyber-top-header">
         <!-- 1. Brand Identity -->
-        <div class="cyber-header-brand" onclick="switchAdminTab('dashboard')" title="OM Rudraksha Enterprise Hub" style="cursor: pointer;">
+        <div class="cyber-header-brand" onclick="switchAdminTab('dashboard')" title="OM Rudraksha Enterprise Hub"
+          style="cursor: pointer;">
           <div class="cyber-brand-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M4 6L14 3L11 9L20 6L17 12L20 18L10 21L13 15L4 18L7 12L4 6Z" fill="#D0FD38"/>
+              <path d="M4 6L14 3L11 9L20 6L17 12L20 18L10 21L13 15L4 18L7 12L4 6Z" fill="#D0FD38" />
             </svg>
           </div>
           <div class="cyber-brand-info">
             <div class="d-flex align-items-center gap-2">
-              <span class="fw-extrabold text-white lh-1 cyber-brand-title">OM RUDRAKSHA <span style="color: #D0FD38;">HUB</span></span>
+              <span class="fw-extrabold text-white lh-1 cyber-brand-title">OM RUDRAKSHA <span
+                  style="color: #D0FD38;">HUB</span></span>
               <span class="cyber-header-badge d-none d-xxl-inline-block">ENTERPRISE</span>
             </div>
-            <div class="text-muted small cyber-header-sub d-none d-xxl-block" data-i18n="admin_header_sub">Fleet & Logistics Command</div>
+            <div class="text-muted small cyber-header-sub d-none d-xxl-block" data-i18n="admin_header_sub">Fleet &
+              Logistics Command</div>
           </div>
         </div>
 
@@ -147,20 +168,27 @@
         <!-- 3. Global Search Bar (Desktop Center) -->
         <div class="cyber-search-box d-none d-lg-flex">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="globalSearchInput" placeholder="Quick search..." data-i18n-placeholder="admin_ph_search" oninput="handleGlobalSearch(this.value)">
+          <input type="text" id="globalSearchInput" placeholder="Quick search..."
+            data-i18n-placeholder="admin_ph_search" oninput="handleGlobalSearch(this.value)">
           <kbd class="cyber-search-kbd">Ctrl+K</kbd>
         </div>
 
         <!-- 4. Quick Action Buttons Group -->
         <div class="cyber-header-toolbar">
-          <button type="button" class="cyber-header-btn" id="btnAdminTopSync" onclick="refreshAdminAll()" title="Refresh & Sync Live Database">
-            <i class="fa-solid fa-rotate" id="iconAdminTopSync"></i> <span class="cyber-btn-label d-none d-sm-inline">Sync</span>
+          <button type="button" class="cyber-header-btn" id="btnAdminTopSync" onclick="refreshAdminAll()"
+            title="Refresh & Sync Live Database">
+            <i class="fa-solid fa-rotate" id="iconAdminTopSync"></i> <span
+              class="cyber-btn-label d-none d-sm-inline">Sync</span>
           </button>
-          <a href="index.html" target="_blank" rel="noopener noreferrer" class="cyber-header-btn" title="Open Client Website in New Tab">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i> <span class="cyber-btn-label d-none d-sm-inline">Website</span>
+          <a href="index.html" target="_blank" rel="noopener noreferrer" class="cyber-header-btn"
+            title="Open Client Website in New Tab">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> <span
+              class="cyber-btn-label d-none d-sm-inline">Website</span>
           </a>
-          <button type="button" id="btnAdminInstall" class="cyber-header-btn btn-install-highlight" onclick="triggerPwaInstall()" title="Install OM Rudraksha Admin as a Desktop/Mobile App">
-            <i class="fa-solid fa-mobile-screen-button"></i> <span class="cyber-btn-label d-none d-sm-inline">Install</span>
+          <button type="button" id="btnAdminInstall" class="cyber-header-btn btn-install-highlight"
+            onclick="triggerPwaInstall()" title="Install OM Rudraksha Admin as a Desktop/Mobile App">
+            <i class="fa-solid fa-mobile-screen-button"></i> <span
+              class="cyber-btn-label d-none d-sm-inline">Install</span>
           </button>
         </div>
 
@@ -179,9 +207,11 @@
             </div>
             <div class="d-none d-xxl-flex flex-column text-start me-1">
               <span class="admin-name-title" id="adminDisplayName">OM Rudraksha Admin</span>
-              <span class="admin-role-badge"><i class="fa-solid fa-circle-check text-success"></i> <span data-i18n="admin_role_super">Super Admin</span></span>
+              <span class="admin-role-badge"><i class="fa-solid fa-circle-check text-success"></i> <span
+                  data-i18n="admin_role_super">Super Admin</span></span>
             </div>
-            <button type="button" class="cyber-header-logout-btn" onclick="logoutAdmin()" title="Secure Lock & Sign Out">
+            <button type="button" class="cyber-header-logout-btn" onclick="logoutAdmin()"
+              title="Secure Lock & Sign Out">
               <i class="fa-solid fa-power-off"></i>
               <span data-i18n="admin_btn_logout" class="d-none d-sm-inline">Logout</span>
             </button>
@@ -202,33 +232,42 @@
           <div class="cyber-card cyber-grid-col-4">
             <div class="cyber-card-header">
               <span class="cyber-card-title">Next Dispatch</span>
-              <button class="cyber-card-menu-btn" onclick="switchAdminTab('bookings')"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+              <button class="cyber-card-menu-btn" onclick="switchAdminTab('bookings')"><i
+                  class="fa-solid fa-ellipsis-vertical"></i></button>
             </div>
 
             <div class="cyber-profile-preview">
-              <div class="cyber-profile-preview-avatar d-flex align-items-center justify-content-center" id="dashNextAvatar" style="background: rgba(249,115,22,0.15); border: 1.5px solid #f97316; border-radius: 14px; width: 48px; height: 48px; color: #f97316; font-size: 1.3rem;">
+              <div class="cyber-profile-preview-avatar d-flex align-items-center justify-content-center"
+                id="dashNextAvatar"
+                style="background: rgba(249,115,22,0.15); border: 1.5px solid #f97316; border-radius: 14px; width: 48px; height: 48px; color: #f97316; font-size: 1.3rem;">
                 <i class="fa-solid fa-truck-fast"></i>
               </div>
               <div>
                 <div class="fw-bold text-white fs-6" id="dashNextDriver">Fleet on Standby</div>
-                <div class="small" style="color: var(--accent-neon);"><i class="fa-solid fa-circle-dot text-success me-1"></i> Live Fleet Dispatch Ready</div>
+                <div class="small" style="color: var(--accent-neon);"><i
+                    class="fa-solid fa-circle-dot text-success me-1"></i> Live Fleet Dispatch Ready</div>
               </div>
             </div>
 
             <div class="cyber-destination-box mb-2">
               <div>
                 <div class="small text-muted" style="font-size: 0.72rem;">Destination & Route</div>
-                <div class="fw-semibold text-white small text-truncate" style="max-width: 170px;" id="dashNextRoute">Jaipur ➔ Delhi NCR</div>
+                <div class="fw-semibold text-white small text-truncate" style="max-width: 170px;" id="dashNextRoute">
+                  Jaipur ➔ Delhi NCR</div>
               </div>
-              <button class="btn-cyber-outline py-1 px-3" style="font-size: 0.75rem;" onclick="switchAdminTab('bookings')">View Details</button>
+              <button class="btn-cyber-outline py-1 px-3" style="font-size: 0.75rem;"
+                onclick="switchAdminTab('bookings')">View Details</button>
             </div>
           </div>
 
           <!-- WIDGET 2: EARNINGS & BALANCE (Col 3) -->
-          <div class="cyber-card cyber-grid-col-3" style="cursor: pointer; transition: transform 0.2s ease, border-color 0.2s ease;" onclick="switchAdminTab('earnings')" title="Click to view detailed earnings analysis">
+          <div class="cyber-card cyber-grid-col-3"
+            style="cursor: pointer; transition: transform 0.2s ease, border-color 0.2s ease;"
+            onclick="switchAdminTab('earnings')" title="Click to view detailed earnings analysis">
             <div class="cyber-card-header">
               <span class="cyber-badge-pill active-glow"><span class="dot"></span> Live Fleet Earning</span>
-              <button class="cyber-card-menu-btn" onclick="event.stopPropagation(); switchAdminTab('earnings')" title="View Detailed Breakdown"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+              <button class="cyber-card-menu-btn" onclick="event.stopPropagation(); switchAdminTab('earnings')"
+                title="View Detailed Breakdown"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
             </div>
 
             <div class="small text-muted">Total Earning Volume</div>
@@ -236,12 +275,15 @@
               <span id="dashTotalRevenue">₹0</span>
               <!-- Mini vector sparkline -->
               <svg class="cyber-sparkline-mini" viewBox="0 0 80 35" fill="none">
-                <path d="M2 28 C 15 28, 25 15, 40 22 C 55 29, 65 8, 78 5" stroke="#D0FD38" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M2 28 C 15 28, 25 15, 40 22 C 55 29, 65 8, 78 5" stroke="#D0FD38" stroke-width="2.5"
+                  stroke-linecap="round" />
               </svg>
             </div>
-            <div class="small text-muted mb-2" id="dashRevenueBreakdown" style="font-size: 0.7rem;">Movers: ₹0 • Parcels: ₹0</div>
+            <div class="small text-muted mb-2" id="dashRevenueBreakdown" style="font-size: 0.7rem;">Movers: ₹0 •
+              Parcels: ₹0</div>
 
-            <button class="btn-cyber-neon w-100 py-2 mt-1" onclick="event.stopPropagation(); switchAdminTab('earnings')">
+            <button class="btn-cyber-neon w-100 py-2 mt-1"
+              onclick="event.stopPropagation(); switchAdminTab('earnings')">
               <i class="fa-solid fa-chart-line me-1"></i> View Detailed Analysis
             </button>
           </div>
@@ -250,14 +292,17 @@
           <div class="cyber-card cyber-grid-col-5">
             <div class="cyber-card-header">
               <span class="cyber-card-title">Distance Traveled</span>
-              <button class="cyber-card-menu-btn" onclick="switchAdminTab('fleet')" title="View Fleet Distance & Transport"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+              <button class="cyber-card-menu-btn" onclick="switchAdminTab('fleet')"
+                title="View Fleet Distance & Transport"><i class="fa-solid fa-ellipsis-vertical"></i></button>
             </div>
 
             <!-- Vector World Map with Pulsing Neon Pins -->
             <div class="cyber-map-container">
               <svg class="cyber-world-map-svg" viewBox="0 0 600 250" fill="none">
-                <path d="M50,80 Q100,50 150,80 T250,90 T350,70 T450,110 T550,80 M70,140 Q130,120 200,160 T350,140 T480,180" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="3 3"/>
-                <path d="M200,90 Q300,30 420,80" stroke="#D0FD38" stroke-width="2" stroke-dasharray="4 4" fill="none"/>
+                <path
+                  d="M50,80 Q100,50 150,80 T250,90 T350,70 T450,110 T550,80 M70,140 Q130,120 200,160 T350,140 T480,180"
+                  stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="3 3" />
+                <path d="M200,90 Q300,30 420,80" stroke="#D0FD38" stroke-width="2" stroke-dasharray="4 4" fill="none" />
               </svg>
               <div class="cyber-map-pin pin-1"></div>
               <div class="cyber-map-pin pin-2"></div>
@@ -270,7 +315,9 @@
                   <span class="cyber-speed-val" id="dashTotalKm">0</span>
                   <span class="cyber-speed-unit">km/transit</span>
                 </div>
-                <span class="cyber-badge-pill" style="font-size: 0.7rem; cursor: pointer;" onclick="switchAdminTab('fleet')" title="Manage Live Fleet">Live Fleet <i class="fa-solid fa-arrow-right ms-1"></i></span>
+                <span class="cyber-badge-pill" style="font-size: 0.7rem; cursor: pointer;"
+                  onclick="switchAdminTab('fleet')" title="Manage Live Fleet">Live Fleet <i
+                    class="fa-solid fa-arrow-right ms-1"></i></span>
               </div>
 
               <div class="cyber-track-progress-wrapper">
@@ -290,25 +337,31 @@
           </div>
 
           <!-- WIDGET: NEW DRIVER PARTNER REGISTRATIONS (Dedicated Prominent Showcase on Dashboard) -->
-          <div class="cyber-card cyber-grid-col-12" id="dashRiderAppsWidget" style="border: 1.5px solid rgba(249, 115, 22, 0.35); background: linear-gradient(180deg, rgba(249,115,22,0.06) 0%, rgba(20,20,26,0.98) 100%);">
+          <div class="cyber-card cyber-grid-col-12" id="dashRiderAppsWidget"
+            style="border: 1.5px solid rgba(249, 115, 22, 0.35); background: linear-gradient(180deg, rgba(249,115,22,0.06) 0%, rgba(20,20,26,0.98) 100%);">
             <div class="cyber-card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
               <div class="d-flex align-items-center gap-3">
-                <div style="width: 44px; height: 44px; border-radius: 14px; background: rgba(249,115,22,0.15); border: 1.5px solid rgba(249,115,22,0.35); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(249,115,22,0.2);">
+                <div
+                  style="width: 44px; height: 44px; border-radius: 14px; background: rgba(249,115,22,0.15); border: 1.5px solid rgba(249,115,22,0.35); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(249,115,22,0.2);">
                   <i class="fa-solid fa-id-card text-warning fs-5"></i>
                 </div>
                 <div>
                   <div class="fw-bold text-white fs-6 d-flex align-items-center gap-2">
                     <span>New Driver Partner Applications</span>
-                    <span class="badge bg-warning text-dark px-2 py-1 fw-bold" id="dashRiderBadge" style="font-size: 0.72rem;">0 Pending</span>
+                    <span class="badge bg-warning text-dark px-2 py-1 fw-bold" id="dashRiderBadge"
+                      style="font-size: 0.72rem;">0 Pending</span>
                   </div>
-                  <div class="small text-muted" style="font-size: 0.75rem;">Prospective delivery partners who registered via website's "Become a Rider" form</div>
+                  <div class="small text-muted" style="font-size: 0.75rem;">Prospective delivery partners who registered
+                    via website's "Become a Rider" form</div>
                 </div>
               </div>
               <div class="d-flex align-items-center gap-2">
-                <button type="button" class="btn-cyber-outline py-1 px-3" style="font-size: 0.75rem;" onclick="renderDashboardRiderApps()">
+                <button type="button" class="btn-cyber-outline py-1 px-3" style="font-size: 0.75rem;"
+                  onclick="renderDashboardRiderApps()">
                   <i class="fa-solid fa-rotate me-1"></i> Refresh
                 </button>
-                <button type="button" class="btn-cyber-neon py-1 px-3" style="font-size: 0.75rem;" onclick="switchAdminTab('riders')">
+                <button type="button" class="btn-cyber-neon py-1 px-3" style="font-size: 0.75rem;"
+                  onclick="switchAdminTab('riders')">
                   <span>Manage All Driver Apps</span> <i class="fa-solid fa-arrow-right ms-1"></i>
                 </button>
               </div>
@@ -318,7 +371,8 @@
             <div class="table-responsive">
               <table class="cyber-table table-borderless text-white mb-0" style="width: 100%;">
                 <thead>
-                  <tr class="border-bottom border-secondary border-opacity-25 text-muted small" style="font-size: 0.75rem;">
+                  <tr class="border-bottom border-secondary border-opacity-25 text-muted small"
+                    style="font-size: 0.75rem;">
                     <th>Applicant Name</th>
                     <th>Phone / WhatsApp</th>
                     <th>City / Zone</th>
@@ -345,7 +399,8 @@
           <div class="cyber-card cyber-grid-col-4">
             <div class="cyber-card-header">
               <span class="cyber-card-title">Today's Activity</span>
-              <button class="cyber-card-menu-btn" onclick="switchAdminTab('earnings')" title="View Earnings & Activity"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+              <button class="cyber-card-menu-btn" onclick="switchAdminTab('earnings')"
+                title="View Earnings & Activity"><i class="fa-solid fa-ellipsis-vertical"></i></button>
             </div>
 
             <div class="cyber-bar-chart-container">
@@ -386,7 +441,8 @@
           <div class="cyber-card cyber-grid-col-4">
             <div class="cyber-card-header">
               <span class="cyber-card-title">Energy & Capacity</span>
-              <span class="cyber-badge-pill" style="font-size: 0.7rem;">Last 24h <i class="fa-solid fa-chevron-down ms-1"></i></span>
+              <span class="cyber-badge-pill" style="font-size: 0.7rem;">Last 24h <i
+                  class="fa-solid fa-chevron-down ms-1"></i></span>
             </div>
 
             <div class="cyber-gauges-wrapper">
@@ -394,8 +450,10 @@
               <div class="cyber-gauge-item">
                 <div class="cyber-gauge-svg-wrap">
                   <svg width="90" height="90" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="#D0FD38" stroke-width="10" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="65" transform="rotate(-90 50 50)" style="filter: drop-shadow(0 0 6px rgba(208, 253, 56, 0.6));"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#D0FD38" stroke-width="10" stroke-linecap="round"
+                      stroke-dasharray="251.2" stroke-dashoffset="65" transform="rotate(-90 50 50)"
+                      style="filter: drop-shadow(0 0 6px rgba(208, 253, 56, 0.6));" />
                   </svg>
                   <div class="cyber-gauge-icon-center"><i class="fa-solid fa-bolt" style="color: #D0FD38;"></i></div>
                 </div>
@@ -406,12 +464,16 @@
               <div class="cyber-gauge-item">
                 <div class="cyber-gauge-svg-wrap">
                   <svg width="90" height="90" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="#D0FD38" stroke-width="10" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="95" transform="rotate(-90 50 50)" style="filter: drop-shadow(0 0 6px rgba(208, 253, 56, 0.6));"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#D0FD38" stroke-width="10" stroke-linecap="round"
+                      stroke-dasharray="251.2" stroke-dashoffset="95" transform="rotate(-90 50 50)"
+                      style="filter: drop-shadow(0 0 6px rgba(208, 253, 56, 0.6));" />
                   </svg>
-                  <div class="cyber-gauge-icon-center"><i class="fa-solid fa-battery-three-quarters" style="color: #D0FD38;"></i></div>
+                  <div class="cyber-gauge-icon-center"><i class="fa-solid fa-battery-three-quarters"
+                      style="color: #D0FD38;"></i></div>
                 </div>
-                <div class="cyber-gauge-label"><span class="dot" style="background: #ffffff;"></span> Standby (62%)</div>
+                <div class="cyber-gauge-label"><span class="dot" style="background: #ffffff;"></span> Standby (62%)
+                </div>
               </div>
             </div>
           </div>
@@ -420,7 +482,8 @@
           <div class="cyber-card cyber-grid-col-4">
             <div class="cyber-card-header">
               <span class="cyber-card-title">Recent Relocations</span>
-              <button class="cyber-card-menu-btn" onclick="switchAdminTab('bookings')"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+              <button class="cyber-card-menu-btn" onclick="switchAdminTab('bookings')"><i
+                  class="fa-solid fa-ellipsis-vertical"></i></button>
             </div>
 
             <div class="cyber-history-list" id="dashRecentHistoryList">
@@ -432,7 +495,8 @@
           <div class="cyber-card cyber-grid-col-6">
             <div class="cyber-card-header">
               <span class="cyber-card-title">Traffic & Demand Intensity</span>
-              <span class="cyber-badge-pill active-glow" style="cursor: pointer;" onclick="switchAdminTab('parcels')" title="View Active Parcels"><span class="dot"></span> Active Now | 14 Live</span>
+              <span class="cyber-badge-pill active-glow" style="cursor: pointer;" onclick="switchAdminTab('parcels')"
+                title="View Active Parcels"><span class="dot"></span> Active Now | 14 Live</span>
             </div>
 
             <!-- Glowing Bezier Wave Graphic -->
@@ -440,12 +504,14 @@
               <svg width="100%" height="100%" viewBox="0 0 400 100" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="neonGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#D0FD38" stop-opacity="0.4"/>
-                    <stop offset="100%" stop-color="#D0FD38" stop-opacity="0.0"/>
+                    <stop offset="0%" stop-color="#D0FD38" stop-opacity="0.4" />
+                    <stop offset="100%" stop-color="#D0FD38" stop-opacity="0.0" />
                   </linearGradient>
                 </defs>
-                <path d="M 0,80 Q 50,20 100,60 T 200,40 T 300,70 T 400,20 L 400,100 L 0,100 Z" fill="url(#neonGradient)"/>
-                <path d="M 0,80 Q 50,20 100,60 T 200,40 T 300,70 T 400,20" fill="none" stroke="#D0FD38" stroke-width="3" style="filter: drop-shadow(0 0 6px rgba(208, 253, 56, 0.8));"/>
+                <path d="M 0,80 Q 50,20 100,60 T 200,40 T 300,70 T 400,20 L 400,100 L 0,100 Z"
+                  fill="url(#neonGradient)" />
+                <path d="M 0,80 Q 50,20 100,60 T 200,40 T 300,70 T 400,20" fill="none" stroke="#D0FD38" stroke-width="3"
+                  style="filter: drop-shadow(0 0 6px rgba(208, 253, 56, 0.8));" />
               </svg>
             </div>
           </div>
@@ -454,7 +520,8 @@
           <div class="cyber-card cyber-grid-col-6">
             <div class="cyber-card-header">
               <span class="cyber-card-title">Performance Metrics</span>
-              <button class="cyber-card-menu-btn" onclick="switchAdminTab('riders')" title="View Rider Partner Metrics"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+              <button class="cyber-card-menu-btn" onclick="switchAdminTab('riders')"
+                title="View Rider Partner Metrics"><i class="fa-solid fa-ellipsis-vertical"></i></button>
             </div>
 
             <div class="cyber-radial-container">
@@ -462,8 +529,10 @@
               <div class="cyber-radial-metric">
                 <div class="cyber-radial-svg-box">
                   <svg width="85" height="85" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="#D0FD38" stroke-width="10" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="50" transform="rotate(-90 50 50)" style="filter: drop-shadow(0 0 6px rgba(208, 253, 56, 0.6));"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#D0FD38" stroke-width="10" stroke-linecap="round"
+                      stroke-dasharray="251.2" stroke-dashoffset="50" transform="rotate(-90 50 50)"
+                      style="filter: drop-shadow(0 0 6px rgba(208, 253, 56, 0.6));" />
                   </svg>
                   <div class="cyber-radial-val-center">80%</div>
                 </div>
@@ -474,8 +543,10 @@
               <div class="cyber-radial-metric">
                 <div class="cyber-radial-svg-box">
                   <svg width="85" height="85" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="#D0FD38" stroke-width="10" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="25" transform="rotate(-90 50 50)" style="filter: drop-shadow(0 0 6px rgba(208, 253, 56, 0.6));"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#D0FD38" stroke-width="10" stroke-linecap="round"
+                      stroke-dasharray="251.2" stroke-dashoffset="25" transform="rotate(-90 50 50)"
+                      style="filter: drop-shadow(0 0 6px rgba(208, 253, 56, 0.6));" />
                   </svg>
                   <div class="cyber-radial-val-center">4.9</div>
                 </div>
@@ -494,12 +565,16 @@
         <div class="cyber-table-card">
           <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
             <div>
-              <h5 class="fw-bold text-white mb-1"><i class="fa-solid fa-list-check me-2" style="color: #D0FD38;"></i>Customer Relocation Bookings</h5>
-              <span class="small text-muted">Assign drivers, update live delivery status, and view customer invoices.</span>
+              <h5 class="fw-bold text-white mb-1"><i class="fa-solid fa-list-check me-2"
+                  style="color: #D0FD38;"></i>Customer Relocation Bookings</h5>
+              <span class="small text-muted">Assign drivers, update live delivery status, and view customer
+                invoices.</span>
             </div>
             <div class="d-flex gap-2">
-              <button class="btn-cyber-outline btn-sm" onclick="loadBookingsFromBackend()"><i class="fa-solid fa-rotate me-1"></i> Sync Bookings</button>
-              <button class="btn btn-sm btn-outline-danger" onclick="clearAllAdminBookings()" title="Clear all bookings from system"><i class="fa-solid fa-trash me-1"></i> Clear All</button>
+              <button class="btn-cyber-outline btn-sm" onclick="loadBookingsFromBackend()"><i
+                  class="fa-solid fa-rotate me-1"></i> Sync Bookings</button>
+              <button class="btn btn-sm btn-outline-danger" onclick="clearAllAdminBookings()"
+                title="Clear all bookings from system"><i class="fa-solid fa-trash me-1"></i> Clear All</button>
             </div>
           </div>
 
@@ -522,7 +597,9 @@
             </table>
           </div>
           <!-- Relocation Bookings Pagination Container -->
-          <div class="cyber-pagination-wrapper d-flex flex-wrap justify-content-between align-items-center mt-3 pt-3 gap-2" id="bookingsPaginationWrapper">
+          <div
+            class="cyber-pagination-wrapper d-flex flex-wrap justify-content-between align-items-center mt-3 pt-3 gap-2"
+            id="bookingsPaginationWrapper">
             <div class="small text-muted" id="bookingsPaginationInfo">Showing 1-15 of 0 bookings</div>
             <div class="d-flex align-items-center gap-1" id="bookingsPaginationControls"></div>
           </div>
@@ -534,20 +611,25 @@
            ====================================================================== -->
       <section class="cyber-tab-panel" id="tab-fleet">
         <!-- Section: Live GPS Fleet Radar & Real-Time Driver Tracking -->
-        <div class="cyber-table-card mb-4" style="background: linear-gradient(180deg, #131926 0%, #0d121f 100%); border: 1px solid rgba(34, 197, 94, 0.25); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <div class="cyber-table-card mb-4"
+          style="background: linear-gradient(180deg, #131926 0%, #0d121f 100%); border: 1px solid rgba(34, 197, 94, 0.25); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
             <div>
               <div class="d-flex align-items-center gap-2">
-                <span style="width: 10px; height: 10px; border-radius: 50%; background: #22c55e; display: inline-block; box-shadow: 0 0 10px #22c55e; animation: pulse 1.5s infinite;"></span>
+                <span
+                  style="width: 10px; height: 10px; border-radius: 50%; background: #22c55e; display: inline-block; box-shadow: 0 0 10px #22c55e; animation: pulse 1.5s infinite;"></span>
                 <h5 class="fw-bold text-white mb-0">
-                  <i class="fa-solid fa-satellite-dish me-2 text-warning"></i>Live Fleet GPS Radar & Nearest Driver Dispatch
+                  <i class="fa-solid fa-satellite-dish me-2 text-warning"></i>Live Fleet GPS Radar & Nearest Driver
+                  Dispatch
                 </h5>
               </div>
-              <span class="small text-muted">Real-time GPS coordinates transmitted from Driver App every 25s with live speedometer and nearest driver matching.</span>
+              <span class="small text-muted">Real-time GPS coordinates transmitted from Driver App every 25s with live
+                speedometer and nearest driver matching.</span>
             </div>
             <div class="d-flex align-items-center gap-2">
               <span class="badge bg-dark border border-secondary px-3 py-2 text-light" id="radarDriverCountBadge">
-                <i class="fa-solid fa-motorcycle text-success me-1"></i> Drivers Online: <strong id="radarOnlineCount" class="text-success">0</strong>
+                <i class="fa-solid fa-motorcycle text-success me-1"></i> Drivers Online: <strong id="radarOnlineCount"
+                  class="text-success">0</strong>
               </span>
               <button class="btn-cyber-outline btn-sm py-2 px-3" onclick="refreshFleetRadarMap(true)">
                 <i class="fa-solid fa-rotate me-1"></i> Refresh Radar
@@ -556,13 +638,20 @@
           </div>
 
           <!-- Radar Map Container -->
-          <div style="position: relative; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); background: #0b0f19;">
+          <div
+            style="position: relative; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); background: #0b0f19;">
             <div id="fleetRadarMap" style="height: 420px; width: 100%; z-index: 1;"></div>
             <!-- Overlay Legend -->
-            <div style="position: absolute; bottom: 15px; left: 15px; z-index: 1000; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(8px); padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: #cbd5e1;">
-              <span class="me-3"><span style="display:inline-block; width:10px; height:10px; background:#22c55e; border-radius:50%; margin-right:5px;"></span>On-Duty / Ready</span>
-              <span class="me-3"><span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border-radius:50%; margin-right:5px;"></span>On Active Trip</span>
-              <span><span style="display:inline-block; width:10px; height:10px; background:#64748b; border-radius:50%; margin-right:5px;"></span>Offline</span>
+            <div
+              style="position: absolute; bottom: 15px; left: 15px; z-index: 1000; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(8px); padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: #cbd5e1;">
+              <span class="me-3"><span
+                  style="display:inline-block; width:10px; height:10px; background:#22c55e; border-radius:50%; margin-right:5px;"></span>On-Duty
+                / Ready</span>
+              <span class="me-3"><span
+                  style="display:inline-block; width:10px; height:10px; background:#f59e0b; border-radius:50%; margin-right:5px;"></span>On
+                Active Trip</span>
+              <span><span
+                  style="display:inline-block; width:10px; height:10px; background:#64748b; border-radius:50%; margin-right:5px;"></span>Offline</span>
             </div>
           </div>
 
@@ -576,17 +665,22 @@
         <div class="cyber-table-card mb-4">
           <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-              <h5 class="fw-bold text-white mb-1"><i class="fa-solid fa-truck-moving me-2" style="color: #D0FD38;"></i>Transport Fleet Models (Website Calculator)</h5>
-              <span class="small text-muted">Add new vehicle models that appear in Step 2 of the customer cost calculator.</span>
+              <h5 class="fw-bold text-white mb-1"><i class="fa-solid fa-truck-moving me-2"
+                  style="color: #D0FD38;"></i>Transport Fleet Models (Website Calculator)</h5>
+              <span class="small text-muted">Add new vehicle models that appear in Step 2 of the customer cost
+                calculator.</span>
             </div>
-            <button class="btn-cyber-outline btn-sm" onclick="loadFleetVehicles()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
+            <button class="btn-cyber-outline btn-sm" onclick="loadFleetVehicles()"><i
+                class="fa-solid fa-rotate me-1"></i> Refresh</button>
           </div>
 
           <div class="row g-4">
             <!-- Add Vehicle Form -->
             <div class="col-lg-4">
-              <div style="background: #111113; border: 1px solid var(--border-subtle); border-radius: 16px; padding: 20px;">
-                <h6 class="fw-bold text-white mb-3"><i class="fa-solid fa-plus-circle me-1" style="color: #D0FD38;"></i> Add / Edit Vehicle Model</h6>
+              <div
+                style="background: #111113; border: 1px solid var(--border-subtle); border-radius: 16px; padding: 20px;">
+                <h6 class="fw-bold text-white mb-3"><i class="fa-solid fa-plus-circle me-1" style="color: #D0FD38;"></i>
+                  Add / Edit Vehicle Model</h6>
                 <form id="vehicleConfigForm" onsubmit="event.preventDefault(); handleSaveVehicle();">
                   <div class="cyber-input-group">
                     <label class="cyber-label">Unique Vehicle Key (e.g. bolero_maxi)</label>
@@ -594,7 +688,8 @@
                   </div>
                   <div class="cyber-input-group">
                     <label class="cyber-label">Display Vehicle Name</label>
-                    <input type="text" class="cyber-input" id="vehName" placeholder="e.g. Bolero Maxi Truck (2 Ton)" required>
+                    <input type="text" class="cyber-input" id="vehName" placeholder="e.g. Bolero Maxi Truck (2 Ton)"
+                      required>
                   </div>
                   <div class="row g-2">
                     <div class="col-6 cyber-input-group">
@@ -613,10 +708,12 @@
                     </div>
                     <div class="col-6 cyber-input-group">
                       <label class="cyber-label">FontAwesome Icon</label>
-                      <input type="text" class="cyber-input" id="vehIcon" placeholder="fa-truck-pickup" value="fa-truck">
+                      <input type="text" class="cyber-input" id="vehIcon" placeholder="fa-truck-pickup"
+                        value="fa-truck">
                     </div>
                   </div>
-                  <button type="submit" class="btn-cyber-neon w-100 py-2 mt-2"><i class="fa-solid fa-floppy-disk me-1"></i> Save to Calculator</button>
+                  <button type="submit" class="btn-cyber-neon w-100 py-2 mt-2"><i
+                      class="fa-solid fa-floppy-disk me-1"></i> Save to Calculator</button>
                 </form>
               </div>
             </div>
@@ -648,8 +745,10 @@
         <div class="cyber-table-card">
           <div class="row g-4">
             <div class="col-lg-4">
-              <div style="background: #111113; border: 1px solid var(--border-subtle); border-radius: 16px; padding: 20px;">
-                <h6 class="fw-bold text-white mb-3"><i class="fa-solid fa-user-plus me-1" style="color: #D0FD38;"></i> Register Driver</h6>
+              <div
+                style="background: #111113; border: 1px solid var(--border-subtle); border-radius: 16px; padding: 20px;">
+                <h6 class="fw-bold text-white mb-3"><i class="fa-solid fa-user-plus me-1" style="color: #D0FD38;"></i>
+                  Register Driver</h6>
                 <form id="driverForm" onsubmit="event.preventDefault(); handleAddDriver();">
                   <div class="cyber-input-group">
                     <label class="cyber-label">Driver Full Name</label>
@@ -657,11 +756,13 @@
                   </div>
                   <div class="cyber-input-group">
                     <label class="cyber-label">Mobile Number</label>
-                    <input type="tel" class="cyber-input" id="drvPhone" placeholder="9829012345" maxlength="10" required>
+                    <input type="tel" class="cyber-input" id="drvPhone" placeholder="9829012345" maxlength="10"
+                      required>
                   </div>
                   <div class="cyber-input-group">
                     <label class="cyber-label">Vehicle Registration No.</label>
-                    <input type="text" class="cyber-input text-uppercase" id="drvVehicleNo" placeholder="RJ-14-GA-1024" required>
+                    <input type="text" class="cyber-input text-uppercase" id="drvVehicleNo" placeholder="RJ-14-GA-1024"
+                      required>
                   </div>
                   <div class="cyber-input-group">
                     <label class="cyber-label">Assigned Vehicle Model</label>
@@ -669,15 +770,18 @@
                       <!-- Populated dynamically -->
                     </select>
                   </div>
-                  <button type="submit" class="btn-cyber-neon w-100 py-2 mt-2"><i class="fa-solid fa-circle-plus me-1"></i> Register Driver Roster</button>
+                  <button type="submit" class="btn-cyber-neon w-100 py-2 mt-2"><i
+                      class="fa-solid fa-circle-plus me-1"></i> Register Driver Roster</button>
                 </form>
               </div>
             </div>
 
             <div class="col-lg-8">
               <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold text-white mb-0"><i class="fa-solid fa-id-badge me-2" style="color: #D0FD38;"></i>Active Drivers Roster</h6>
-                <button class="btn-cyber-outline btn-sm" onclick="loadDriversFromBackend()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
+                <h6 class="fw-bold text-white mb-0"><i class="fa-solid fa-id-badge me-2"
+                    style="color: #D0FD38;"></i>Active Drivers Roster</h6>
+                <button class="btn-cyber-outline btn-sm" onclick="loadDriversFromBackend()"><i
+                    class="fa-solid fa-rotate me-1"></i> Refresh</button>
               </div>
               <div class="table-responsive">
                 <table class="cyber-table">
@@ -707,8 +811,10 @@
         <div class="cyber-table-card">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <div>
-              <h5 class="fw-bold text-white mb-1"><i class="fa-solid fa-sliders me-2" style="color: #D0FD38;"></i>Live Tariff & Relocation Rate Controller</h5>
-              <p class="text-muted small mb-0">Updates made here instantly update live price quotes on the client calculator.</p>
+              <h5 class="fw-bold text-white mb-1"><i class="fa-solid fa-sliders me-2" style="color: #D0FD38;"></i>Live
+                Tariff & Relocation Rate Controller</h5>
+              <p class="text-muted small mb-0">Updates made here instantly update live price quotes on the client
+                calculator.</p>
             </div>
             <button type="button" class="btn-cyber-neon btn-sm py-2 px-3" onclick="switchAdminTab('earnings')">
               <i class="fa-solid fa-chart-pie me-1"></i> View Detailed Total Earnings Ledger ➔
@@ -733,7 +839,9 @@
             </div>
 
             <!-- House Size Fees -->
-            <h6 class="fw-bold text-white border-bottom pb-2 mb-3" style="border-color: var(--border-subtle) !important;"><i class="fa-solid fa-house-chimney me-1" style="color: #D0FD38;"></i> House / Cargo Size Surcharges (₹)</h6>
+            <h6 class="fw-bold text-white border-bottom pb-2 mb-3"
+              style="border-color: var(--border-subtle) !important;"><i class="fa-solid fa-house-chimney me-1"
+                style="color: #D0FD38;"></i> House / Cargo Size Surcharges (₹)</h6>
             <div class="row g-3 mb-4">
               <div class="col-md-2.4 col-6 cyber-input-group">
                 <label class="cyber-label">1 RK Studio (₹)</label>
@@ -758,7 +866,9 @@
             </div>
 
             <!-- Item Unit Rates -->
-            <h6 class="fw-bold text-white border-bottom pb-2 mb-3" style="border-color: var(--border-subtle) !important;"><i class="fa-solid fa-boxes-packing me-1" style="color: #D0FD38;"></i> Item Unit Rates (₹ / Item)</h6>
+            <h6 class="fw-bold text-white border-bottom pb-2 mb-3"
+              style="border-color: var(--border-subtle) !important;"><i class="fa-solid fa-boxes-packing me-1"
+                style="color: #D0FD38;"></i> Item Unit Rates (₹ / Item)</h6>
             <div class="row g-3 mb-4">
               <div class="col-md-2 col-6 cyber-input-group">
                 <label class="cyber-label">Sofa Set (₹)</label>
@@ -787,7 +897,9 @@
             </div>
 
             <!-- Add-on Services Pricing -->
-            <h6 class="fw-bold text-white border-bottom pb-2 mb-3" style="border-color: var(--border-subtle) !important;"><i class="fa-solid fa-shield-halved me-1" style="color: #D0FD38;"></i> Add-on Services Rates (₹)</h6>
+            <h6 class="fw-bold text-white border-bottom pb-2 mb-3"
+              style="border-color: var(--border-subtle) !important;"><i class="fa-solid fa-shield-halved me-1"
+                style="color: #D0FD38;"></i> Add-on Services Rates (₹)</h6>
             <div class="row g-3 mb-4">
               <div class="col-md-3 col-6 cyber-input-group">
                 <label class="cyber-label">Bubble Packing (₹)</label>
@@ -807,7 +919,8 @@
               </div>
             </div>
 
-            <button type="submit" class="btn-cyber-neon py-3 px-5"><i class="fa-solid fa-floppy-disk me-2"></i> Save & Apply All Rates</button>
+            <button type="submit" class="btn-cyber-neon py-3 px-5"><i class="fa-solid fa-floppy-disk me-2"></i> Save &
+              Apply All Rates</button>
           </form>
         </div>
       </section>
@@ -819,11 +932,13 @@
         <div class="row g-4">
           <div class="col-md-5">
             <div class="cyber-table-card">
-              <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-plus-circle me-2" style="color: #D0FD38;"></i>Create Promo Code</h5>
+              <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-plus-circle me-2"
+                  style="color: #D0FD38;"></i>Create Promo Code</h5>
               <form id="couponForm" onsubmit="event.preventDefault(); createAdminCoupon();">
                 <div class="cyber-input-group">
                   <label class="cyber-label">Coupon Code (Uppercase)</label>
-                  <input type="text" class="cyber-input text-uppercase" id="newCouponCode" placeholder="e.g. FESTIVE25" required>
+                  <input type="text" class="cyber-input text-uppercase" id="newCouponCode" placeholder="e.g. FESTIVE25"
+                    required>
                 </div>
                 <div class="cyber-input-group">
                   <label class="cyber-label">Discount Type</label>
@@ -834,13 +949,16 @@
                 </div>
                 <div class="cyber-input-group">
                   <label class="cyber-label">Discount Value</label>
-                  <input type="number" class="cyber-input" id="newCouponValue" placeholder="15 (for 15%) or 750 (for ₹750)" required>
+                  <input type="number" class="cyber-input" id="newCouponValue"
+                    placeholder="15 (for 15%) or 750 (for ₹750)" required>
                 </div>
                 <div class="cyber-input-group">
                   <label class="cyber-label">Offer Tagline / Description</label>
-                  <input type="text" class="cyber-input" id="newCouponDesc" placeholder="Special Seasonal Relocation Discount">
+                  <input type="text" class="cyber-input" id="newCouponDesc"
+                    placeholder="Special Seasonal Relocation Discount">
                 </div>
-                <button type="submit" class="btn-cyber-neon w-100 py-2 mt-2"><i class="fa-solid fa-circle-check me-1"></i> Save Promo Code</button>
+                <button type="submit" class="btn-cyber-neon w-100 py-2 mt-2"><i
+                    class="fa-solid fa-circle-check me-1"></i> Save Promo Code</button>
               </form>
             </div>
           </div>
@@ -848,8 +966,10 @@
           <div class="col-md-7">
             <div class="cyber-table-card">
               <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-white mb-0"><i class="fa-solid fa-ticket me-2" style="color: #D0FD38;"></i>Active Promo Codes</h5>
-                <button class="btn-cyber-outline btn-sm" onclick="loadAdminCoupons()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
+                <h5 class="fw-bold text-white mb-0"><i class="fa-solid fa-ticket me-2"
+                    style="color: #D0FD38;"></i>Active Promo Codes</h5>
+                <button class="btn-cyber-outline btn-sm" onclick="loadAdminCoupons()"><i
+                    class="fa-solid fa-rotate me-1"></i> Refresh</button>
               </div>
               <div class="table-responsive">
                 <table class="cyber-table">
@@ -877,7 +997,8 @@
            ====================================================================== -->
       <section class="cyber-tab-panel" id="tab-theme">
         <div class="cyber-table-card mb-4">
-          <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-building me-2" style="color: #D0FD38;"></i>Company & Contact Details</h5>
+          <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-building me-2" style="color: #D0FD38;"></i>Company &
+            Contact Details</h5>
           <form id="companyForm" onsubmit="event.preventDefault(); saveCompanyBranding();">
             <div class="row g-3 mb-3">
               <div class="col-md-6 cyber-input-group">
@@ -905,38 +1026,45 @@
             </div>
             <div class="cyber-input-group mb-3">
               <label class="cyber-label">Office Address (Printed on Tax Invoices)</label>
-              <input type="text" class="cyber-input" id="compAddress" value="Near SNM Hospital, Gandhipath (West), Jaipur, RJ">
+              <input type="text" class="cyber-input" id="compAddress"
+                value="Near SNM Hospital, Gandhipath (West), Jaipur, RJ">
             </div>
-            <button type="submit" class="btn-cyber-neon py-2 px-4"><i class="fa-solid fa-floppy-disk me-1"></i> Save Company Info</button>
+            <button type="submit" class="btn-cyber-neon py-2 px-4"><i class="fa-solid fa-floppy-disk me-1"></i> Save
+              Company Info</button>
           </form>
         </div>
 
         <div class="cyber-table-card">
-          <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-palette me-2" style="color: #D0FD38;"></i>Website Color Palette</h5>
+          <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-palette me-2" style="color: #D0FD38;"></i>Website
+            Color Palette</h5>
           <div class="row g-4">
             <div class="col-md-4 cyber-input-group">
               <label class="cyber-label">Primary Brand Color</label>
               <div class="d-flex align-items-center gap-2">
-                <input type="color" class="form-control form-control-color bg-dark border-secondary" id="primaryColorInput" value="#f97316" oninput="previewThemeColors()">
+                <input type="color" class="form-control form-control-color bg-dark border-secondary"
+                  id="primaryColorInput" value="#f97316" oninput="previewThemeColors()">
                 <input type="text" class="cyber-input" id="primaryColorText" value="#f97316">
               </div>
             </div>
             <div class="col-md-4 cyber-input-group">
               <label class="cyber-label">Secondary Dark Color</label>
               <div class="d-flex align-items-center gap-2">
-                <input type="color" class="form-control form-control-color bg-dark border-secondary" id="secondaryColorInput" value="#1e293b" oninput="previewThemeColors()">
+                <input type="color" class="form-control form-control-color bg-dark border-secondary"
+                  id="secondaryColorInput" value="#1e293b" oninput="previewThemeColors()">
                 <input type="text" class="cyber-input" id="secondaryColorText" value="#1e293b">
               </div>
             </div>
             <div class="col-md-4 cyber-input-group">
               <label class="cyber-label">Accent Cyan Color</label>
               <div class="d-flex align-items-center gap-2">
-                <input type="color" class="form-control form-control-color bg-dark border-secondary" id="accentColorInput" value="#06b6d4" oninput="previewThemeColors()">
+                <input type="color" class="form-control form-control-color bg-dark border-secondary"
+                  id="accentColorInput" value="#06b6d4" oninput="previewThemeColors()">
                 <input type="text" class="cyber-input" id="accentColorText" value="#06b6d4">
               </div>
             </div>
           </div>
-          <button type="button" class="btn-cyber-neon py-2 px-4 mt-3" onclick="saveAdminTheme()"><i class="fa-solid fa-floppy-disk me-1"></i> Apply & Save Palette</button>
+          <button type="button" class="btn-cyber-neon py-2 px-4 mt-3" onclick="saveAdminTheme()"><i
+              class="fa-solid fa-floppy-disk me-1"></i> Apply & Save Palette</button>
         </div>
       </section>
 
@@ -947,15 +1075,19 @@
         <!-- Section Header -->
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
           <div>
-            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(255, 158, 27, 0.15); border: 1px solid rgba(255, 158, 27, 0.4); color: #FF9E1B; font-size: 0.8rem; font-weight: 700;">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2"
+              style="background: rgba(255, 158, 27, 0.15); border: 1px solid rgba(255, 158, 27, 0.4); color: #FF9E1B; font-size: 0.8rem; font-weight: 700;">
               <i class="fa-solid fa-bolt"></i> OM Rudraksha Express Logistics Vertical
             </div>
-            <h4 class="fw-extrabold text-white mb-1"><i class="fa-solid fa-box-open me-2" style="color: #FF9E1B;"></i>OM Rudraksha Parcel Operations Hub</h4>
-            <div class="text-muted small">Manage on-demand city deliveries, rider onboarding applications, and courier tariff settings.</div>
+            <h4 class="fw-extrabold text-white mb-1"><i class="fa-solid fa-box-open me-2" style="color: #FF9E1B;"></i>OM
+              Rudraksha Parcel Operations Hub</h4>
+            <div class="text-muted small">Manage on-demand city deliveries, rider onboarding applications, and courier
+              tariff settings.</div>
           </div>
           <div class="d-flex gap-2 flex-wrap align-items-center">
             <!-- New Order Notification Badge -->
-            <span id="parcelNewBadge" style="display:none;align-items:center;gap:5px;background:rgba(249,115,22,0.15);border:1px solid rgba(249,115,22,0.4);border-radius:20px;padding:3px 10px;font-size:0.75rem;font-weight:700;color:#f97316;animation:pulse-badge 1.5s ease infinite;">
+            <span id="parcelNewBadge"
+              style="display:none;align-items:center;gap:5px;background:rgba(249,115,22,0.15);border:1px solid rgba(249,115,22,0.4);border-radius:20px;padding:3px 10px;font-size:0.75rem;font-weight:700;color:#f97316;animation:pulse-badge 1.5s ease infinite;">
               <span style="width:6px;height:6px;border-radius:50%;background:#f97316;display:inline-block;"></span>
               <span id="parcelNewBadgeCount">0</span> New
             </span>
@@ -982,28 +1114,32 @@
             <div class="cyber-card p-3">
               <div class="small text-muted mb-1">Total Parcel Orders</div>
               <div class="fs-4 fw-extrabold text-white" id="pclTotalCount">0</div>
-              <div class="small" style="color: #FF9E1B; font-size: 0.72rem;"><i class="fa-solid fa-boxes-stacked me-1"></i> Lifetime Logged</div>
+              <div class="small" style="color: #FF9E1B; font-size: 0.72rem;"><i
+                  class="fa-solid fa-boxes-stacked me-1"></i> Lifetime Logged</div>
             </div>
           </div>
           <div class="col-6 col-md-3">
             <div class="cyber-card p-3">
               <div class="small text-muted mb-1">Active Deliveries</div>
               <div class="fs-4 fw-extrabold text-warning" id="pclActiveCount">0</div>
-              <div class="small text-muted" style="font-size: 0.72rem;"><i class="fa-solid fa-truck-fast me-1"></i> In Transit / Pickup</div>
+              <div class="small text-muted" style="font-size: 0.72rem;"><i class="fa-solid fa-truck-fast me-1"></i> In
+                Transit / Pickup</div>
             </div>
           </div>
           <div class="col-6 col-md-3">
             <div class="cyber-card p-3">
               <div class="small text-muted mb-1">Registered Riders</div>
               <div class="fs-4 fw-extrabold text-info" id="pclRidersCount">0</div>
-              <div class="small text-muted" style="font-size: 0.72rem;"><i class="fa-solid fa-motorcycle me-1"></i> Courier Partners</div>
+              <div class="small text-muted" style="font-size: 0.72rem;"><i class="fa-solid fa-motorcycle me-1"></i>
+                Courier Partners</div>
             </div>
           </div>
           <div class="col-6 col-md-3">
             <div class="cyber-card p-3">
               <div class="small text-muted mb-1">Parcel Revenue</div>
               <div class="fs-4 fw-extrabold text-success" id="pclRevenueTotal">₹0</div>
-              <div class="small text-muted" style="font-size: 0.72rem;"><i class="fa-solid fa-sack-dollar me-1"></i> Total Volume</div>
+              <div class="small text-muted" style="font-size: 0.72rem;"><i class="fa-solid fa-sack-dollar me-1"></i>
+                Total Volume</div>
             </div>
           </div>
         </div>
@@ -1011,13 +1147,17 @@
         <!-- Subtab Navigation Switcher -->
         <div class="cyber-card p-2 mb-4">
           <div class="d-flex gap-2 flex-wrap" id="parcelSubtabPills">
-            <button class="btn btn-sm btn-outline-warning active px-3 py-2 rounded-pill fw-bold" onclick="switchParcelSubtab('orders', this)">
+            <button class="btn btn-sm btn-outline-warning active px-3 py-2 rounded-pill fw-bold"
+              onclick="switchParcelSubtab('orders', this)">
               <i class="fa-solid fa-list-check me-1"></i> 1. Live Parcel Orders
             </button>
-            <button class="btn btn-sm btn-outline-light px-3 py-2 rounded-pill fw-bold" onclick="switchParcelSubtab('riders', this)">
-              <i class="fa-solid fa-motorcycle me-1"></i> 2. Rider Partner Onboarding (<span id="badgeRiderAppCount">0</span>)
+            <button class="btn btn-sm btn-outline-light px-3 py-2 rounded-pill fw-bold"
+              onclick="switchParcelSubtab('riders', this)">
+              <i class="fa-solid fa-motorcycle me-1"></i> 2. Rider Partner Onboarding (<span
+                id="badgeRiderAppCount">0</span>)
             </button>
-            <button class="btn btn-sm btn-outline-light px-3 py-2 rounded-pill fw-bold" onclick="switchParcelSubtab('tariff', this)">
+            <button class="btn btn-sm btn-outline-light px-3 py-2 rounded-pill fw-bold"
+              onclick="switchParcelSubtab('tariff', this)">
               <i class="fa-solid fa-sliders me-1"></i> 3. Parcel Tariff & Rates
             </button>
           </div>
@@ -1029,19 +1169,28 @@
           <div class="cyber-card p-3 mb-3">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
               <div class="d-flex gap-2 flex-wrap" id="parcelFilterPills">
-                <button class="btn btn-sm btn-outline-light active px-3 rounded-pill" onclick="filterParcelsTable('all', this)">All</button>
-                <button class="btn btn-sm btn-outline-light px-3 rounded-pill" onclick="filterParcelsTable('searching_driver', this)">Searching Rider</button>
-                <button class="btn btn-sm btn-outline-light px-3 rounded-pill" onclick="filterParcelsTable('driver_assigned', this)">Driver Assigned</button>
-                <button class="btn btn-sm btn-outline-danger px-3 rounded-pill fw-bold" onclick="filterParcelsTable('driver_declined', this)"><i class="fa-solid fa-triangle-exclamation me-1"></i> Declined / Reassign</button>
-                <button class="btn btn-sm btn-outline-light px-3 rounded-pill" onclick="filterParcelsTable('in_transit', this)">In Transit</button>
-                <button class="btn btn-sm btn-outline-light px-3 rounded-pill" onclick="filterParcelsTable('delivered', this)">Delivered</button>
+                <button class="btn btn-sm btn-outline-light active px-3 rounded-pill"
+                  onclick="filterParcelsTable('all', this)">All</button>
+                <button class="btn btn-sm btn-outline-light px-3 rounded-pill"
+                  onclick="filterParcelsTable('searching_driver', this)">Searching Rider</button>
+                <button class="btn btn-sm btn-outline-light px-3 rounded-pill"
+                  onclick="filterParcelsTable('driver_assigned', this)">Driver Assigned</button>
+                <button class="btn btn-sm btn-outline-danger px-3 rounded-pill fw-bold"
+                  onclick="filterParcelsTable('driver_declined', this)"><i
+                    class="fa-solid fa-triangle-exclamation me-1"></i> Declined / Reassign</button>
+                <button class="btn btn-sm btn-outline-light px-3 rounded-pill"
+                  onclick="filterParcelsTable('in_transit', this)">In Transit</button>
+                <button class="btn btn-sm btn-outline-light px-3 rounded-pill"
+                  onclick="filterParcelsTable('delivered', this)">Delivered</button>
               </div>
               <div class="d-flex gap-2 align-items-center flex-wrap">
-                <button class="btn btn-sm btn-outline-warning px-3 rounded-pill fw-bold" onclick="broadcastOpenParcelsModal()" title="Broadcast all open orders to Rider WhatsApp Group">
+                <button class="btn btn-sm btn-outline-warning px-3 rounded-pill fw-bold"
+                  onclick="broadcastOpenParcelsModal()" title="Broadcast all open orders to Rider WhatsApp Group">
                   <i class="fa-solid fa-tower-broadcast me-1"></i> Broadcast Open Jobs
                 </button>
                 <div style="min-width: 220px;">
-                  <input type="text" class="cyber-input py-1 px-3" id="searchParcelInput" placeholder="Search Parcel ID, Phone, City..." oninput="searchParcelsTable(this.value)">
+                  <input type="text" class="cyber-input py-1 px-3" id="searchParcelInput"
+                    placeholder="Search Parcel ID, Phone, City..." oninput="searchParcelsTable(this.value)">
                 </div>
               </div>
             </div>
@@ -1075,7 +1224,9 @@
               </table>
             </div>
             <!-- Parcel Deliveries Pagination Container -->
-            <div class="cyber-pagination-wrapper d-flex flex-wrap justify-content-between align-items-center mt-3 pt-3 gap-2" id="parcelsPaginationWrapper">
+            <div
+              class="cyber-pagination-wrapper d-flex flex-wrap justify-content-between align-items-center mt-3 pt-3 gap-2"
+              id="parcelsPaginationWrapper">
               <div class="small text-muted" id="parcelsPaginationInfo">Showing 1-15 of 0 parcels</div>
               <div class="d-flex align-items-center gap-1" id="parcelsPaginationControls"></div>
             </div>
@@ -1087,19 +1238,25 @@
           <div class="cyber-card p-3">
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
               <div>
-                <h6 class="fw-bold text-white mb-1"><i class="fa-solid fa-id-card text-warning me-2"></i>Rider Partner Registrations</h6>
-                <div class="small text-muted">Driver partners who registered via the "Become a Rider" portal on the website.</div>
+                <h6 class="fw-bold text-white mb-1"><i class="fa-solid fa-id-card text-warning me-2"></i>Rider Partner
+                  Registrations</h6>
+                <div class="small text-muted">Driver partners who registered via the "Become a Rider" portal on the
+                  website.</div>
               </div>
               <div class="d-flex align-items-center gap-2 flex-wrap">
-                <button class="btn btn-sm btn-outline-warning active px-3 rounded-pill fw-bold" id="btnSubFilterRiderAll" onclick="filterRiderApps('all')">All (<span id="subCountFilterAll">0</span>)</button>
-                <button class="btn btn-sm btn-outline-warning px-3 rounded-pill fw-bold" id="btnSubFilterRiderPending" onclick="filterRiderApps('Pending')">Pending (<span id="subCountFilterPending">0</span>)</button>
-                <button class="btn btn-sm btn-outline-success px-3 rounded-pill fw-bold" id="btnSubFilterRiderApproved" onclick="filterRiderApps('Approved')">Approved (<span id="subCountFilterApproved">0</span>)</button>
+                <button class="btn btn-sm btn-outline-warning active px-3 rounded-pill fw-bold"
+                  id="btnSubFilterRiderAll" onclick="filterRiderApps('all')">All (<span
+                    id="subCountFilterAll">0</span>)</button>
+                <button class="btn btn-sm btn-outline-warning px-3 rounded-pill fw-bold" id="btnSubFilterRiderPending"
+                  onclick="filterRiderApps('Pending')">Pending (<span id="subCountFilterPending">0</span>)</button>
+                <button class="btn btn-sm btn-outline-success px-3 rounded-pill fw-bold" id="btnSubFilterRiderApproved"
+                  onclick="filterRiderApps('Approved')">Approved (<span id="subCountFilterApproved">0</span>)</button>
                 <button class="btn-cyber-outline btn-sm" onclick="loadRiderApplications()">
                   <i class="fa-solid fa-rotate me-1"></i> Refresh Applications
                 </button>
               </div>
             </div>
-            
+
             <div class="table-responsive">
               <table class="cyber-table table-borderless text-white mb-0" style="width: 100%; min-width: 950px;">
                 <thead>
@@ -1131,8 +1288,10 @@
         <!-- SUBTAB 3: PARCEL TARIFF & RATES CONTROLLER -->
         <div id="subtabPanel-tariff" class="parcel-subtab-panel d-none">
           <div class="cyber-card p-4">
-            <h5 class="fw-bold text-white mb-1"><i class="fa-solid fa-sliders text-warning me-2"></i>OM Rudraksha Parcel Pricing & Fare Controller</h5>
-            <p class="text-muted small mb-4">Changes made here instantly update live price quotes on the client parcel delivery calculator.</p>
+            <h5 class="fw-bold text-white mb-1"><i class="fa-solid fa-sliders text-warning me-2"></i>OM Rudraksha Parcel
+              Pricing & Fare Controller</h5>
+            <p class="text-muted small mb-4">Changes made here instantly update live price quotes on the client parcel
+              delivery calculator.</p>
 
             <form id="parcelTariffForm" onsubmit="event.preventDefault(); saveAdminParcelRates();">
               <!-- Base & Distance Rates -->
@@ -1152,7 +1311,8 @@
               </div>
 
               <!-- Weight Surcharges -->
-              <h6 class="fw-bold text-white border-bottom pb-2 mb-3" style="border-color: var(--border-subtle) !important;">
+              <h6 class="fw-bold text-white border-bottom pb-2 mb-3"
+                style="border-color: var(--border-subtle) !important;">
                 <i class="fa-solid fa-weight-hanging text-warning me-1"></i> Weight Tier Surcharges (₹)
               </h6>
               <div class="row g-3 mb-4">
@@ -1183,7 +1343,8 @@
               </div>
 
               <!-- Vehicle Surcharges -->
-              <h6 class="fw-bold text-white border-bottom pb-2 mb-3" style="border-color: var(--border-subtle) !important;">
+              <h6 class="fw-bold text-white border-bottom pb-2 mb-3"
+                style="border-color: var(--border-subtle) !important;">
                 <i class="fa-solid fa-motorcycle text-warning me-1"></i> Vehicle Option Surcharges (₹)
               </h6>
               <div class="row g-3 mb-4">
@@ -1202,7 +1363,8 @@
               </div>
 
               <!-- Addon Protections -->
-              <h6 class="fw-bold text-white border-bottom pb-2 mb-3" style="border-color: var(--border-subtle) !important;">
+              <h6 class="fw-bold text-white border-bottom pb-2 mb-3"
+                style="border-color: var(--border-subtle) !important;">
                 <i class="fa-solid fa-shield-halved text-warning me-1"></i> Protection Addons Pricing (₹)
               </h6>
               <div class="row g-3 mb-4">
@@ -1233,15 +1395,18 @@
            TAB 8: DEDICATED DRIVER PARTNER ONBOARDING HUB
            ====================================================================== -->
       <section class="cyber-tab-panel" id="tab-riders">
-        <div class="cyber-card mb-4" style="border: 1.5px solid rgba(249, 115, 22, 0.35); background: linear-gradient(180deg, rgba(249,115,22,0.06) 0%, rgba(20,20,26,0.98) 100%);">
+        <div class="cyber-card mb-4"
+          style="border: 1.5px solid rgba(249, 115, 22, 0.35); background: linear-gradient(180deg, rgba(249,115,22,0.06) 0%, rgba(20,20,26,0.98) 100%);">
           <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div class="d-flex align-items-center gap-3">
-              <div style="width: 52px; height: 52px; border-radius: 16px; background: rgba(249,115,22,0.18); border: 1.5px solid rgba(249,115,22,0.4); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(249,115,22,0.25);">
+              <div
+                style="width: 52px; height: 52px; border-radius: 16px; background: rgba(249,115,22,0.18); border: 1.5px solid rgba(249,115,22,0.4); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(249,115,22,0.25);">
                 <i class="fa-solid fa-motorcycle text-warning fa-xl"></i>
               </div>
               <div>
                 <h4 class="fw-bold text-white mb-1">Driver Partner Onboarding & Applications Hub</h4>
-                <div class="text-muted small">Review, approve, and auto-dispatch security PINs to new delivery drivers via WhatsApp.</div>
+                <div class="text-muted small">Review, approve, and auto-dispatch security PINs to new delivery drivers
+                  via WhatsApp.</div>
               </div>
             </div>
             <div class="d-flex align-items-center gap-2">
@@ -1254,26 +1419,33 @@
           <!-- Quick Metrics Row -->
           <div class="row g-3 mt-3">
             <div class="col-6 col-md-3">
-              <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);">
+              <div class="p-3 rounded-3"
+                style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);">
                 <div class="small text-muted mb-1" style="font-size: 0.72rem;">Total Registrations</div>
                 <div class="fs-4 fw-extrabold text-white" id="statRiderTotal">0</div>
               </div>
             </div>
             <div class="col-6 col-md-3">
-              <div class="p-3 rounded-3" style="background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.25);">
-                <div class="small text-warning mb-1" style="font-size: 0.72rem;"><i class="fa-solid fa-clock me-1"></i> Pending Review</div>
+              <div class="p-3 rounded-3"
+                style="background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.25);">
+                <div class="small text-warning mb-1" style="font-size: 0.72rem;"><i class="fa-solid fa-clock me-1"></i>
+                  Pending Review</div>
                 <div class="fs-4 fw-extrabold text-warning" id="statRiderPending">0</div>
               </div>
             </div>
             <div class="col-6 col-md-3">
-              <div class="p-3 rounded-3" style="background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25);">
-                <div class="small text-success mb-1" style="font-size: 0.72rem;"><i class="fa-solid fa-circle-check me-1"></i> Active Approved</div>
+              <div class="p-3 rounded-3"
+                style="background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25);">
+                <div class="small text-success mb-1" style="font-size: 0.72rem;"><i
+                    class="fa-solid fa-circle-check me-1"></i> Active Approved</div>
                 <div class="fs-4 fw-extrabold text-success" id="statRiderApproved">0</div>
               </div>
             </div>
             <div class="col-6 col-md-3">
-              <div class="p-3 rounded-3" style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);">
-                <div class="small text-danger mb-1" style="font-size: 0.72rem;"><i class="fa-solid fa-ban me-1"></i> Rejected</div>
+              <div class="p-3 rounded-3"
+                style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);">
+                <div class="small text-danger mb-1" style="font-size: 0.72rem;"><i class="fa-solid fa-ban me-1"></i>
+                  Rejected</div>
                 <div class="fs-4 fw-extrabold text-danger" id="statRiderRejected">0</div>
               </div>
             </div>
@@ -1284,9 +1456,12 @@
         <div class="cyber-card">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <div class="d-flex align-items-center gap-2">
-              <button class="btn btn-sm btn-outline-warning active px-3 rounded-pill fw-bold" id="btnFilterRiderAll" onclick="filterRiderApps('all')">All (<span id="countFilterAll">0</span>)</button>
-              <button class="btn btn-sm btn-outline-warning px-3 rounded-pill fw-bold" id="btnFilterRiderPending" onclick="filterRiderApps('Pending')">Pending (<span id="countFilterPending">0</span>)</button>
-              <button class="btn btn-sm btn-outline-success px-3 rounded-pill fw-bold" id="btnFilterRiderApproved" onclick="filterRiderApps('Approved')">Approved (<span id="countFilterApproved">0</span>)</button>
+              <button class="btn btn-sm btn-outline-warning active px-3 rounded-pill fw-bold" id="btnFilterRiderAll"
+                onclick="filterRiderApps('all')">All (<span id="countFilterAll">0</span>)</button>
+              <button class="btn btn-sm btn-outline-warning px-3 rounded-pill fw-bold" id="btnFilterRiderPending"
+                onclick="filterRiderApps('Pending')">Pending (<span id="countFilterPending">0</span>)</button>
+              <button class="btn btn-sm btn-outline-success px-3 rounded-pill fw-bold" id="btnFilterRiderApproved"
+                onclick="filterRiderApps('Approved')">Approved (<span id="countFilterApproved">0</span>)</button>
             </div>
             <div class="small text-muted">
               Approving a driver automatically generates their Driver PIN & opens WhatsApp with their login credentials.
@@ -1329,45 +1504,57 @@
         <div class="row g-3 mb-4">
           <!-- KPI 1: Gross Total Earnings -->
           <div class="col-xl-3 col-md-6">
-            <div class="cyber-card h-100 p-3" style="background: linear-gradient(135deg, rgba(208,253,56,0.08), rgba(23,23,26,0.95)); border: 1px solid rgba(208,253,56,0.3); border-radius: 16px;">
+            <div class="cyber-card h-100 p-3"
+              style="background: linear-gradient(135deg, rgba(208,253,56,0.08), rgba(23,23,26,0.95)); border: 1px solid rgba(208,253,56,0.3); border-radius: 16px;">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="small text-muted text-uppercase fw-bold" style="letter-spacing: 0.5px;">Gross Total Revenue</span>
-                <span class="cyber-badge-pill active-glow" style="font-size: 0.65rem;"><span class="dot"></span> Live Sync</span>
+                <span class="small text-muted text-uppercase fw-bold" style="letter-spacing: 0.5px;">Gross Total
+                  Revenue</span>
+                <span class="cyber-badge-pill active-glow" style="font-size: 0.65rem;"><span class="dot"></span> Live
+                  Sync</span>
               </div>
-              <h2 class="fw-bold mb-1" id="earnKpiTotalRev" style="color: #D0FD38; font-family: 'Space Grotesk', sans-serif;">₹0</h2>
+              <h2 class="fw-bold mb-1" id="earnKpiTotalRev"
+                style="color: #D0FD38; font-family: 'Space Grotesk', sans-serif;">₹0</h2>
               <div class="small text-muted" id="earnKpiTotalSub">0 Completed Orders Across All Services</div>
             </div>
           </div>
 
           <!-- KPI 2: Packers & Movers Breakdown -->
           <div class="col-xl-3 col-md-6">
-            <div class="cyber-card h-100 p-3" style="background: linear-gradient(135deg, rgba(56,189,248,0.08), rgba(23,23,26,0.95)); border: 1px solid rgba(56,189,248,0.3); border-radius: 16px;">
+            <div class="cyber-card h-100 p-3"
+              style="background: linear-gradient(135deg, rgba(56,189,248,0.08), rgba(23,23,26,0.95)); border: 1px solid rgba(56,189,248,0.3); border-radius: 16px;">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="small text-muted text-uppercase fw-bold" style="letter-spacing: 0.5px;">Packers & Movers</span>
+                <span class="small text-muted text-uppercase fw-bold" style="letter-spacing: 0.5px;">Packers &
+                  Movers</span>
                 <i class="fa-solid fa-truck-moving" style="color: #38bdf8; font-size: 1.2rem;"></i>
               </div>
-              <h2 class="fw-bold text-white mb-1" id="earnKpiMoversRev" style="font-family: 'Space Grotesk', sans-serif;">₹0</h2>
+              <h2 class="fw-bold text-white mb-1" id="earnKpiMoversRev"
+                style="font-family: 'Space Grotesk', sans-serif;">₹0</h2>
               <div class="small text-muted" id="earnKpiMoversSub">0 Relocations Delivered</div>
             </div>
           </div>
 
           <!-- KPI 3: On-Demand Parcels Breakdown -->
           <div class="col-xl-3 col-md-6">
-            <div class="cyber-card h-100 p-3" style="background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(23,23,26,0.95)); border: 1px solid rgba(34,197,94,0.3); border-radius: 16px;">
+            <div class="cyber-card h-100 p-3"
+              style="background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(23,23,26,0.95)); border: 1px solid rgba(34,197,94,0.3); border-radius: 16px;">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="small text-muted text-uppercase fw-bold" style="letter-spacing: 0.5px;">Parcel Deliveries</span>
+                <span class="small text-muted text-uppercase fw-bold" style="letter-spacing: 0.5px;">Parcel
+                  Deliveries</span>
                 <i class="fa-solid fa-box-open" style="color: #22c55e; font-size: 1.2rem;"></i>
               </div>
-              <h2 class="fw-bold text-white mb-1" id="earnKpiParcelsRev" style="font-family: 'Space Grotesk', sans-serif;">₹0</h2>
+              <h2 class="fw-bold text-white mb-1" id="earnKpiParcelsRev"
+                style="font-family: 'Space Grotesk', sans-serif;">₹0</h2>
               <div class="small text-muted" id="earnKpiParcelsSub">0 Parcels Delivered</div>
             </div>
           </div>
 
           <!-- KPI 4: Top Driver & Fleet Payouts -->
           <div class="col-xl-3 col-md-6">
-            <div class="cyber-card h-100 p-3" style="background: linear-gradient(135deg, rgba(234,179,8,0.08), rgba(23,23,26,0.95)); border: 1px solid rgba(234,179,8,0.3); border-radius: 16px;">
+            <div class="cyber-card h-100 p-3"
+              style="background: linear-gradient(135deg, rgba(234,179,8,0.08), rgba(23,23,26,0.95)); border: 1px solid rgba(234,179,8,0.3); border-radius: 16px;">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="small text-muted text-uppercase fw-bold" style="letter-spacing: 0.5px;">Top Fleet Rider</span>
+                <span class="small text-muted text-uppercase fw-bold" style="letter-spacing: 0.5px;">Top Fleet
+                  Rider</span>
                 <i class="fa-solid fa-trophy text-warning" style="font-size: 1.2rem;"></i>
               </div>
               <h4 class="fw-bold text-white mb-1 text-truncate" id="earnKpiTopDriver">Standby</h4>
@@ -1381,7 +1568,8 @@
           <div class="row g-2 align-items-center">
             <div class="col-md-3 col-12">
               <div class="position-relative">
-                <input type="text" class="cyber-input ps-5" id="earnSearchInput" placeholder="Search Order ID, Driver, Customer, Route..." oninput="filterEarningsLedger()">
+                <input type="text" class="cyber-input ps-5" id="earnSearchInput"
+                  placeholder="Search Order ID, Driver, Customer, Route..." oninput="filterEarningsLedger()">
                 <i class="fa-solid fa-magnifying-glass position-absolute text-muted" style="top: 14px; left: 16px;"></i>
               </div>
             </div>
@@ -1404,8 +1592,10 @@
               </select>
             </div>
             <div class="col-lg-3 col-md-12 col-12 d-flex gap-2 justify-content-md-end mt-2 mt-lg-0">
-              <button class="btn-cyber-outline btn-sm py-2 px-3 flex-fill text-nowrap" id="btnEarnSync" onclick="refreshEarningsLedger()"><i class="fa-solid fa-rotate me-1"></i> Sync Live</button>
-              <button class="btn-cyber-neon btn-sm py-2 px-3 flex-fill text-nowrap" id="btnEarnExportCSV" onclick="exportEarningsLedgerCSV()"><i class="fa-solid fa-file-csv me-1"></i> Export CSV</button>
+              <button class="btn-cyber-outline btn-sm py-2 px-3 flex-fill text-nowrap" id="btnEarnSync"
+                onclick="refreshEarningsLedger()"><i class="fa-solid fa-rotate me-1"></i> Sync Live</button>
+              <button class="btn-cyber-neon btn-sm py-2 px-3 flex-fill text-nowrap" id="btnEarnExportCSV"
+                onclick="exportEarningsLedgerCSV()"><i class="fa-solid fa-file-csv me-1"></i> Export CSV</button>
             </div>
           </div>
         </div>
@@ -1414,8 +1604,10 @@
         <div class="cyber-table-card">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <div>
-              <h5 class="fw-bold text-white mb-0"><i class="fa-solid fa-receipt me-2" style="color: #D0FD38;"></i>Detailed Order-Wise Earnings Breakdown</h5>
-              <span class="small text-muted">Complete breakdown of every order: Driver assigned, exact drop timestamp, route, and earning amount.</span>
+              <h5 class="fw-bold text-white mb-0"><i class="fa-solid fa-receipt me-2"
+                  style="color: #D0FD38;"></i>Detailed Order-Wise Earnings Breakdown</h5>
+              <span class="small text-muted">Complete breakdown of every order: Driver assigned, exact drop timestamp,
+                route, and earning amount.</span>
             </div>
             <div class="small fw-bold text-muted" id="earnLedgerStats">Showing 0 orders</div>
           </div>
@@ -1446,7 +1638,8 @@
 
         <!-- Driver Payout Leaderboard Table -->
         <div class="cyber-table-card mt-4">
-          <h5 class="fw-bold text-white mb-2"><i class="fa-solid fa-id-card-clip me-2 text-warning"></i>Driver-Wise Earnings Summary</h5>
+          <h5 class="fw-bold text-white mb-2"><i class="fa-solid fa-id-card-clip me-2 text-warning"></i>Driver-Wise
+            Earnings Summary</h5>
           <p class="text-muted small mb-3">Total earnings, trips count, and last active drop for each driver.</p>
           <div class="table-responsive">
             <table class="cyber-table">
@@ -1479,11 +1672,13 @@
          3. UNIVERSAL FLOATING CYBER DOCK (Desktop & Mobile Unified Navigation)
          ====================================================================== -->
     <nav class="cyber-floating-dock">
-      <button class="cyber-dock-btn active" id="dock-dashboard" onclick="switchAdminTab('dashboard')" title="Overview Dashboard">
+      <button class="cyber-dock-btn active" id="dock-dashboard" onclick="switchAdminTab('dashboard')"
+        title="Overview Dashboard">
         <i class="fa-solid fa-shapes"></i>
         <span data-i18n="dock_overview">Overview</span>
       </button>
-      <button class="cyber-dock-btn" id="dock-earnings" onclick="switchAdminTab('earnings')" title="Revenue & Earnings Ledger">
+      <button class="cyber-dock-btn" id="dock-earnings" onclick="switchAdminTab('earnings')"
+        title="Revenue & Earnings Ledger">
         <i class="fa-solid fa-chart-line" style="color: #D0FD38;"></i>
         <span data-i18n="dock_earnings">Earnings</span>
       </button>
@@ -1491,16 +1686,20 @@
         <i class="fa-solid fa-list-check"></i>
         <span data-i18n="dock_bookings">Bookings</span>
       </button>
-      <button class="cyber-dock-btn" id="dock-parcels" onclick="switchAdminTab('parcels')" title="On-Demand Parcel Delivery">
+      <button class="cyber-dock-btn" id="dock-parcels" onclick="switchAdminTab('parcels')"
+        title="On-Demand Parcel Delivery">
         <i class="fa-solid fa-box-open"></i>
         <span data-i18n="dock_parcels">Parcels</span>
       </button>
-      <button class="cyber-dock-btn position-relative" id="dock-riders" onclick="switchAdminTab('riders')" title="Driver Partner Applications">
+      <button class="cyber-dock-btn position-relative" id="dock-riders" onclick="switchAdminTab('riders')"
+        title="Driver Partner Applications">
         <i class="fa-solid fa-id-badge text-warning"></i>
         <span data-i18n="dock_riders">Driver Apps</span>
-        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle d-none" id="dockRiderBadgeCount" style="font-size: 0.62rem; padding: 2px 5px;">0</span>
+        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle d-none"
+          id="dockRiderBadgeCount" style="font-size: 0.62rem; padding: 2px 5px;">0</span>
       </button>
-      <button class="cyber-dock-btn" id="dock-fleet" onclick="switchAdminTab('fleet')" title="Transport Fleet & Drivers">
+      <button class="cyber-dock-btn" id="dock-fleet" onclick="switchAdminTab('fleet')"
+        title="Transport Fleet & Drivers">
         <i class="fa-solid fa-truck-fast"></i>
         <span data-i18n="dock_fleet">Fleet</span>
       </button>
@@ -1512,7 +1711,8 @@
         <i class="fa-solid fa-ticket"></i>
         <span data-i18n="dock_coupons">Coupons</span>
       </button>
-      <button class="cyber-dock-btn" id="dock-theme" onclick="switchAdminTab('theme')" title="Branding & Theme Controller">
+      <button class="cyber-dock-btn" id="dock-theme" onclick="switchAdminTab('theme')"
+        title="Branding & Theme Controller">
         <i class="fa-solid fa-palette"></i>
         <span data-i18n="dock_theme">Theme</span>
       </button>
@@ -1530,18 +1730,22 @@
        ========================================================================== -->
   <div class="modal fade" id="assignDriverModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="background: #17171A; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #ffffff;">
+      <div class="modal-content"
+        style="background: #17171A; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #ffffff;">
         <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title fw-bold"><i class="fa-solid fa-truck-fast me-2" style="color: #D0FD38;"></i>Assign Fleet Driver</h5>
+          <h5 class="modal-title fw-bold"><i class="fa-solid fa-truck-fast me-2" style="color: #D0FD38;"></i>Assign
+            Fleet Driver</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body p-4">
           <form id="assignDriverForm" onsubmit="event.preventDefault(); submitDriverAssignment();">
             <input type="hidden" id="assignBookingId">
-            <div style="background: #111113; border: 1px solid var(--border-subtle); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+            <div
+              style="background: #111113; border: 1px solid var(--border-subtle); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
               <div class="small text-muted">Booking Reference:</div>
               <div class="fw-bold fs-5" id="assignBookingDisplayId" style="color: #D0FD38;">RB-XXXXXX</div>
-              <div class="small text-muted mt-1">Customer: <strong id="assignBookingCustName" class="text-white">-</strong></div>
+              <div class="small text-muted mt-1">Customer: <strong id="assignBookingCustName"
+                  class="text-white">-</strong></div>
             </div>
 
             <div class="mb-3">
@@ -1567,49 +1771,63 @@
        ========================================================================== -->
   <div class="modal fade" id="assignParcelDriverModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="background: #17171A; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #ffffff;">
+      <div class="modal-content"
+        style="background: #17171A; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #ffffff;">
         <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title fw-bold" id="assignParcelModalTitle"><i class="fa-solid fa-motorcycle me-2" style="color: #D0FD38;"></i>Assign Rider to Parcel</h5>
+          <h5 class="modal-title fw-bold" id="assignParcelModalTitle"><i class="fa-solid fa-motorcycle me-2"
+              style="color: #D0FD38;"></i>Assign Rider to Parcel</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body p-4">
           <form id="assignParcelDriverForm" onsubmit="event.preventDefault(); submitParcelDriverAssignment();">
             <input type="hidden" id="assignParcelId">
             <input type="hidden" id="assignParcelIsReassign" value="false">
-            <div style="background: #111113; border: 1px solid var(--border-subtle); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+            <div
+              style="background: #111113; border: 1px solid var(--border-subtle); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
               <div class="d-flex justify-content-between align-items-center mb-1">
                 <div class="small text-muted">Parcel Reference:</div>
-                <span class="badge bg-warning text-dark font-monospace fw-bold" id="assignParcelReqVehBadge">🛵 BIKE</span>
+                <span class="badge bg-warning text-dark font-monospace fw-bold" id="assignParcelReqVehBadge">🛵
+                  BIKE</span>
               </div>
               <div class="fw-bold fs-5 text-orange" id="assignParcelDisplayId">RP-PCL-XXXXXX</div>
-              <div class="small text-muted mt-1">Sender: <strong id="assignParcelSender" class="text-white">-</strong> ➔ Receiver: <strong id="assignParcelReceiver" class="text-white">-</strong></div>
+              <div class="small text-muted mt-1">Sender: <strong id="assignParcelSender" class="text-white">-</strong> ➔
+                Receiver: <strong id="assignParcelReceiver" class="text-white">-</strong></div>
               <!-- Current Assigned Driver banner (shown when reassigning) -->
-              <div id="assignParcelCurrentDriverBox" class="mt-2 pt-2 border-top border-secondary border-opacity-25" style="display: none;">
-                <div class="small text-muted">Currently Assigned: <span class="text-info fw-bold" id="assignParcelCurrentDriverName">-</span></div>
+              <div id="assignParcelCurrentDriverBox" class="mt-2 pt-2 border-top border-secondary border-opacity-25"
+                style="display: none;">
+                <div class="small text-muted">Currently Assigned: <span class="text-info fw-bold"
+                    id="assignParcelCurrentDriverName">-</span></div>
               </div>
             </div>
 
             <!-- Vehicle Match Requirement Banner -->
-            <div id="assignParcelVehicleBanner" class="p-2 mb-3 rounded-3" style="background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.35);">
+            <div id="assignParcelVehicleBanner" class="p-2 mb-3 rounded-3"
+              style="background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.35);">
               <div class="d-flex align-items-center gap-2">
                 <i class="fa-solid fa-filter text-warning fs-5"></i>
                 <div class="flex-grow-1">
-                  <div class="small fw-bold text-warning" id="assignParcelVehicleBannerTitle">Vehicle Filter Active</div>
-                  <div class="text-white-50" style="font-size: 11px;" id="assignParcelVehicleBannerSub">Showing only drivers matching customer booked vehicle.</div>
+                  <div class="small fw-bold text-warning" id="assignParcelVehicleBannerTitle">Vehicle Filter Active
+                  </div>
+                  <div class="text-white-50" style="font-size: 11px;" id="assignParcelVehicleBannerSub">Showing only
+                    drivers matching customer booked vehicle.</div>
                 </div>
               </div>
             </div>
 
             <!-- Proximity-Based Nearest Driver Recommendation -->
-            <div id="nearestDriverRecommendationBanner" class="p-2 mb-3 rounded-3 d-flex align-items-center justify-content-between" style="background: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.35);">
+            <div id="nearestDriverRecommendationBanner"
+              class="p-2 mb-3 rounded-3 d-flex align-items-center justify-content-between"
+              style="background: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.35);">
               <div class="d-flex align-items-center gap-2">
                 <i class="fa-solid fa-bolt text-success fs-5"></i>
                 <div>
                   <div class="small fw-bold text-success" id="nearestDriverBannerTitle">Scanning Nearest Driver...</div>
-                  <div class="text-white-50" style="font-size: 11px;" id="nearestDriverBannerSub">Matching live GPS location with pickup address</div>
+                  <div class="text-white-50" style="font-size: 11px;" id="nearestDriverBannerSub">Matching live GPS
+                    location with pickup address</div>
                 </div>
               </div>
-              <span class="badge bg-success text-dark font-monospace fw-bold" id="nearestDriverEtaBadge">⚡ NEAREST</span>
+              <span class="badge bg-success text-dark font-monospace fw-bold" id="nearestDriverEtaBadge">⚡
+                NEAREST</span>
             </div>
 
             <div class="mb-3">
@@ -1621,17 +1839,22 @@
                 <!-- Populated dynamically -->
               </select>
               <div class="form-check mt-2" id="assignParcelOverrideWrap">
-                <input class="form-check-input" type="checkbox" id="assignParcelOverrideToggle" onchange="toggleParcelVehicleFilter(this.checked)">
-                <label class="form-check-label text-muted small" for="assignParcelOverrideToggle" style="font-size: 0.76rem; cursor: pointer;">
+                <input class="form-check-input" type="checkbox" id="assignParcelOverrideToggle"
+                  onchange="toggleParcelVehicleFilter(this.checked)">
+                <label class="form-check-label text-muted small" for="assignParcelOverrideToggle"
+                  style="font-size: 0.76rem; cursor: pointer;">
                   Show other fleet vehicle types (Emergency Override)
                 </label>
               </div>
             </div>
 
             <!-- Auto-generated OTP preview for Admin -->
-            <div class="p-3 mb-3" style="background: rgba(249,115,22,0.06); border: 1px dashed rgba(249,115,22,0.3); border-radius: 12px;">
+            <div class="p-3 mb-3"
+              style="background: rgba(249,115,22,0.06); border: 1px dashed rgba(249,115,22,0.3); border-radius: 12px;">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="small text-muted text-uppercase fw-bold"><i class="fa-solid fa-shield-keyhole text-warning me-1"></i>Security Verification PINs (Auto-Assigned)</span>
+                <span class="small text-muted text-uppercase fw-bold"><i
+                    class="fa-solid fa-shield-keyhole text-warning me-1"></i>Security Verification PINs
+                  (Auto-Assigned)</span>
                 <span class="badge bg-warning text-dark font-monospace">Admin Control</span>
               </div>
               <div class="row g-2 text-center">
@@ -1666,38 +1889,49 @@
        ========================================================================== -->
   <div class="modal fade" id="adminParcelOtpModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="background: #17171A; border: 1px solid rgba(249,115,22,0.35); border-radius: 20px; color: #ffffff; box-shadow: 0 20px 50px rgba(0,0,0,0.85);">
+      <div class="modal-content"
+        style="background: #17171A; border: 1px solid rgba(249,115,22,0.35); border-radius: 20px; color: #ffffff; box-shadow: 0 20px 50px rgba(0,0,0,0.85);">
         <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title fw-bold"><i class="fa-solid fa-shield-keyhole me-2" style="color: #f97316;"></i>Security OTPs & WhatsApp Dispatch</h5>
+          <h5 class="modal-title fw-bold"><i class="fa-solid fa-shield-keyhole me-2"
+              style="color: #f97316;"></i>Security OTPs & WhatsApp Dispatch</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body p-4">
           <input type="hidden" id="otpModalParcelId">
-          <div style="background: #111113; border: 1px solid var(--border-subtle); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+          <div
+            style="background: #111113; border: 1px solid var(--border-subtle); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
             <div class="d-flex justify-content-between align-items-center mb-1">
               <span class="small text-muted">Parcel ID:</span>
               <span class="fw-bold fs-5 text-warning font-monospace" id="otpModalDisplayId">RP-PCL-XXXXXX</span>
             </div>
-            <div class="small text-white mb-1">Sender: <strong id="otpModalSenderName" class="text-warning">-</strong> (<span id="otpModalSenderPhone" class="text-muted">-</span>)</div>
-            <div class="small text-white">Receiver: <strong id="otpModalReceiverName" class="text-success">-</strong> (<span id="otpModalReceiverPhone" class="text-muted">-</span>)</div>
+            <div class="small text-white mb-1">Sender: <strong id="otpModalSenderName" class="text-warning">-</strong>
+              (<span id="otpModalSenderPhone" class="text-muted">-</span>)</div>
+            <div class="small text-white">Receiver: <strong id="otpModalReceiverName" class="text-success">-</strong>
+              (<span id="otpModalReceiverPhone" class="text-muted">-</span>)</div>
           </div>
 
           <div class="row g-3 mb-3">
             <div class="col-6">
-              <label class="cyber-label small"><i class="fa-solid fa-key text-warning me-1"></i>Pickup OTP (Sender)</label>
+              <label class="cyber-label small"><i class="fa-solid fa-key text-warning me-1"></i>Pickup OTP
+                (Sender)</label>
               <div class="input-group">
-                <input type="text" id="adminInputPickupOtp" maxlength="4" class="cyber-input text-center fs-4 fw-bold text-warning font-monospace" placeholder="4 Digits">
+                <input type="text" id="adminInputPickupOtp" maxlength="4"
+                  class="cyber-input text-center fs-4 fw-bold text-warning font-monospace" placeholder="4 Digits">
               </div>
-              <button type="button" class="btn btn-sm btn-outline-secondary w-100 mt-2 py-1" style="font-size: 0.72rem;" onclick="generateAdminModalOtp('pickup')">
+              <button type="button" class="btn btn-sm btn-outline-secondary w-100 mt-2 py-1" style="font-size: 0.72rem;"
+                onclick="generateAdminModalOtp('pickup')">
                 <i class="fa-solid fa-dice me-1"></i> Regenerate
               </button>
             </div>
             <div class="col-6">
-              <label class="cyber-label small"><i class="fa-solid fa-shield-halved text-success me-1"></i>Delivery OTP (Receiver)</label>
+              <label class="cyber-label small"><i class="fa-solid fa-shield-halved text-success me-1"></i>Delivery OTP
+                (Receiver)</label>
               <div class="input-group">
-                <input type="text" id="adminInputDeliveryOtp" maxlength="4" class="cyber-input text-center fs-4 fw-bold text-success font-monospace" placeholder="4 Digits">
+                <input type="text" id="adminInputDeliveryOtp" maxlength="4"
+                  class="cyber-input text-center fs-4 fw-bold text-success font-monospace" placeholder="4 Digits">
               </div>
-              <button type="button" class="btn btn-sm btn-outline-secondary w-100 mt-2 py-1" style="font-size: 0.72rem;" onclick="generateAdminModalOtp('delivery')">
+              <button type="button" class="btn btn-sm btn-outline-secondary w-100 mt-2 py-1" style="font-size: 0.72rem;"
+                onclick="generateAdminModalOtp('delivery')">
                 <i class="fa-solid fa-dice me-1"></i> Regenerate
               </button>
             </div>
@@ -1706,12 +1940,18 @@
           <div class="d-flex flex-column gap-2 mt-4">
             <div class="row g-2">
               <div class="col-12 col-sm-6">
-                <button type="button" class="btn btn-warning w-100 py-2 fw-bold text-dark d-flex align-items-center justify-content-center gap-2" style="background: #f59e0b; border: none; border-radius: 10px; font-size: 0.85rem;" onclick="dispatchPickupOtpToSenderWhatsApp()" title="Send Pickup PIN strictly to Sender only">
+                <button type="button"
+                  class="btn btn-warning w-100 py-2 fw-bold text-dark d-flex align-items-center justify-content-center gap-2"
+                  style="background: #f59e0b; border: none; border-radius: 10px; font-size: 0.85rem;"
+                  onclick="dispatchPickupOtpToSenderWhatsApp()" title="Send Pickup PIN strictly to Sender only">
                   <i class="fa-brands fa-whatsapp text-dark"></i> <span>Send Sender PIN</span>
                 </button>
               </div>
               <div class="col-12 col-sm-6">
-                <button type="button" class="btn btn-info w-100 py-2 fw-bold text-dark d-flex align-items-center justify-content-center gap-2" style="background: #06b6d4; border: none; border-radius: 10px; font-size: 0.85rem;" onclick="dispatchDeliveryOtpToReceiverWhatsApp()" title="Send Delivery PIN strictly to Receiver only">
+                <button type="button"
+                  class="btn btn-info w-100 py-2 fw-bold text-dark d-flex align-items-center justify-content-center gap-2"
+                  style="background: #06b6d4; border: none; border-radius: 10px; font-size: 0.85rem;"
+                  onclick="dispatchDeliveryOtpToReceiverWhatsApp()" title="Send Delivery PIN strictly to Receiver only">
                   <i class="fa-brands fa-whatsapp text-dark"></i> <span>Send Receiver PIN</span>
                 </button>
               </div>
@@ -1731,48 +1971,61 @@
        ========================================================================== -->
   <div class="modal fade" id="broadcastParcelModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="background: #17171A; border: 1px solid rgba(255, 158, 27, 0.35); border-radius: 20px; color: #ffffff; box-shadow: 0 20px 50px rgba(0,0,0,0.85), 0 0 35px rgba(255,158,27,0.18);">
+      <div class="modal-content"
+        style="background: #17171A; border: 1px solid rgba(255, 158, 27, 0.35); border-radius: 20px; color: #ffffff; box-shadow: 0 20px 50px rgba(0,0,0,0.85), 0 0 35px rgba(255,158,27,0.18);">
         <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title fw-bold"><i class="fa-solid fa-tower-broadcast me-2" style="color: #FF9E1B;"></i>Broadcast Job to Rider Fleet</h5>
+          <h5 class="modal-title fw-bold"><i class="fa-solid fa-tower-broadcast me-2"
+              style="color: #FF9E1B;"></i>Broadcast Job to Rider Fleet</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body p-4">
           <div class="small text-muted mb-3">
-            Send an instant delivery alert to your <strong>WhatsApp Rider Group</strong> or rider contacts. The first rider to tap the dispatch link claims the ride!
+            Send an instant delivery alert to your <strong>WhatsApp Rider Group</strong> or rider contacts. The first
+            rider to tap the dispatch link claims the ride!
           </div>
 
           <!-- Order Summary Card -->
-          <div style="background: #111113; border: 1px solid var(--border-subtle); border-radius: 14px; padding: 14px; margin-bottom: 16px;">
+          <div
+            style="background: #111113; border: 1px solid var(--border-subtle); border-radius: 14px; padding: 14px; margin-bottom: 16px;">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <span class="badge bg-warning text-dark fw-bold" id="bcastModalBadge">RP-PCL-XXXXXX</span>
               <strong class="text-success fs-5" id="bcastModalFare">₹0</strong>
             </div>
-            <div class="small text-white mb-1"><span class="text-muted">Route:</span> <strong id="bcastModalRoute">-</strong></div>
-            <div class="small text-muted"><span class="text-muted">Vehicle:</span> <span id="bcastModalVehicle" class="text-warning fw-bold">-</span> • Distance: <span id="bcastModalDist">-</span> KM</div>
-            <div class="small text-muted mt-1"><span class="text-muted">Estimated Rider Payout:</span> <strong id="bcastModalPayout" class="text-success">₹0</strong></div>
+            <div class="small text-white mb-1"><span class="text-muted">Route:</span> <strong
+                id="bcastModalRoute">-</strong></div>
+            <div class="small text-muted"><span class="text-muted">Vehicle:</span> <span id="bcastModalVehicle"
+                class="text-warning fw-bold">-</span> • Distance: <span id="bcastModalDist">-</span> KM</div>
+            <div class="small text-muted mt-1"><span class="text-muted">Estimated Rider Payout:</span> <strong
+                id="bcastModalPayout" class="text-success">₹0</strong></div>
           </div>
 
           <!-- WhatsApp Message Preview Box -->
           <div class="mb-3">
             <div class="d-flex justify-content-between align-items-center mb-1">
               <label class="cyber-label mb-0">Formatted Announcement Message:</label>
-              <button type="button" onclick="copyBroadcastText()" class="btn btn-sm btn-outline-warning py-0 px-2 rounded-pill" style="font-size: 0.72rem;">
+              <button type="button" onclick="copyBroadcastText()"
+                class="btn btn-sm btn-outline-warning py-0 px-2 rounded-pill" style="font-size: 0.72rem;">
                 <i class="fa-regular fa-copy me-1"></i>Copy Text
               </button>
             </div>
-            <textarea class="cyber-input" id="bcastMessagePreview" rows="6" style="font-size: 0.78rem; font-family: monospace; line-height: 1.4; resize: none; background: #0c0d10;" readonly></textarea>
+            <textarea class="cyber-input" id="bcastMessagePreview" rows="6"
+              style="font-size: 0.78rem; font-family: monospace; line-height: 1.4; resize: none; background: #0c0d10;"
+              readonly></textarea>
           </div>
 
           <!-- Action Buttons -->
           <div class="d-flex flex-column gap-2">
-            <a href="#" id="btnLaunchWhatsAppBroadcast" target="_blank" class="btn btn-success fw-bold py-3 rounded-pill text-center d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #22c55e, #16a34a); border: none; font-size: 0.92rem; text-decoration: none;">
+            <a href="#" id="btnLaunchWhatsAppBroadcast" target="_blank"
+              class="btn btn-success fw-bold py-3 rounded-pill text-center d-flex align-items-center justify-content-center gap-2"
+              style="background: linear-gradient(135deg, #22c55e, #16a34a); border: none; font-size: 0.92rem; text-decoration: none;">
               <i class="fa-brands fa-whatsapp fa-lg"></i> Send to WhatsApp Group / Chats
             </a>
             <div class="d-flex gap-2">
               <button type="button" class="btn btn-cyber-outline flex-fill py-2" onclick="copyBroadcastText()">
                 <i class="fa-solid fa-copy me-1"></i> Copy to Clipboard
               </button>
-              <button type="button" class="btn btn-outline-secondary flex-fill py-2 rounded-pill small" data-bs-dismiss="modal">
+              <button type="button" class="btn btn-outline-secondary flex-fill py-2 rounded-pill small"
+                data-bs-dismiss="modal">
                 Close
               </button>
             </div>
@@ -1794,4 +2047,5 @@
   <!-- PWA Universal Install Script -->
   <script src="pwa-install.js"></script>
 </body>
+
 </html>
