@@ -24,6 +24,7 @@ Backend/data/
 Backend/logs/
 
 # Flutter build artifacts & Binary APKs
+playstore_release/
 driver_app/build/
 driver_app/android/build/
 driver_app/.dart_tool/
@@ -31,4 +32,8 @@ driver_app/.gradle/
 driver_app/android/.gradle/
 Frontend/downloads/*.apk
 *.apk
+*.aab
+*.jks
+*.keystore
+**/key.properties
 
